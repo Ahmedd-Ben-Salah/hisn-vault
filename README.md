@@ -3,11 +3,13 @@
 </p>
 
 <p align="center">
+  <a href="https://youtu.be/9w5dINjHO-k">Demo video</a> &nbsp;·&nbsp;
   <a href="https://ahmedd-ben-salah.github.io/hisn-vault/pitch/">Pitch deck</a> &nbsp;·&nbsp;
   <a href="https://ahmedd-ben-salah.github.io/hisn-vault/">Dashboard</a> &nbsp;·&nbsp;
   <a href="https://ahmedd-ben-salah.github.io/hisn-vault/guardian/">Guardian page</a> &nbsp;·&nbsp;
   <a href="https://ahmedd-ben-salah.github.io/hisn-vault/verify/">Verify a payment</a> &nbsp;·&nbsp;
   <a href="docs/HARDWARE_RESULTS.md">Hardware test run</a> &nbsp;·&nbsp;
+  <a href="https://github.com/Ahmedd-Ben-Salah/hisn-vault/releases/latest">Android app</a> &nbsp;·&nbsp;
   <a href="docs/README.md">Design docs</a>
 </p>
 
@@ -25,6 +27,14 @@ Most payment scams do not break anything. The victim is talked into sending the 
 **Hisn** (Arabic for *fortress*) puts time and a second person between that moment of pressure and the money leaving. It is a smart-contract vault on Hedera, a small hardware puck that signs payments, and an alarm light that sits in someone else's home. Everyday payments go out at once. Anything unusual waits, rings the alarm, and asks again.
 
 The rules live in the contract and the release is run by the Hedera network itself. Our server only carries messages: it cannot move the money, speed a payment up, or hold one back.
+
+## Demo
+
+<p align="center">
+  <a href="https://youtu.be/9w5dINjHO-k"><img src="https://img.youtube.com/vi/9w5dINjHO-k/hqdefault.jpg" alt="Hisn demo video" width="640"></a>
+</p>
+
+The [demo video](https://youtu.be/9w5dINjHO-k) shows the real puck and alarm light on Hedera testnet. The Android app is on the [releases page](https://github.com/Ahmedd-Ben-Salah/hisn-vault/releases/latest).
 
 ## The devices
 
@@ -67,7 +77,7 @@ When a waiting payment is confirmed, the vault books its own release with the He
 | **Dashboard** | `dashboard/` | The owner's screens: balance, waiting payments with a countdown, history with HashScan links, and an optional helper agent that may pay saved payees within a small allowance. |
 | **Guardian page** | `guardian/` | A static page for the guardian's phone: stop, approve, freeze. It signs locally and can go straight to the contract if the relayer is down. |
 | **Verify page** | `verify/` | Reads the vault's rules, its payments and the public log straight from the mirror node, with a link to the raw data behind every line. Nothing on it comes from our server. |
-| **Mobile app** | `mobile/` | Expo app for Android with the owner and guardian views in one place. |
+| **Mobile app** | `mobile/` | Expo app for Android with the owner and guardian views in one place. The APK is on the [releases page](https://github.com/Ahmedd-Ben-Salah/hisn-vault/releases/latest). |
 | **Shared spec** | `shared/` | Message digests, token table and test vectors. The same vectors are checked by the Solidity tests, the relayer and the firmware. |
 
 ## Who is trusted with what
