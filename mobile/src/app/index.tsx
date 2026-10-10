@@ -4,7 +4,7 @@ import { FlatList, Pressable, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ACCOUNTS, type Account } from "../state/accounts";
 import { useSession } from "../state/session";
-import { Avatar, Button, T, Tinted } from "../ui/kit";
+import { Avatar, Button, T } from "../ui/kit";
 import { Logo } from "../ui/parts";
 import { C, R } from "../ui/theme";
 
@@ -35,7 +35,7 @@ export default function Accounts() {
           Who is using this phone?
         </T>
         <T color={C.muted} style={{ marginTop: 6 }}>
-          Swipe between accounts and tap one. {settings.mode === "demo" ? "Demo accounts, no password." : "Live mode: guardians sign with the key saved on this phone."}
+          {settings.mode === "demo" ? "Demo accounts, no password." : "Live mode: guardians sign with the key saved on this phone."}
         </T>
       </View>
 
@@ -84,9 +84,6 @@ export default function Accounts() {
                   {item.about}
                 </T>
               </View>
-              <T size={15} weight="heavy" color={item.role === "owner" ? C.bg : C.ink}>
-                Tap to continue →
-              </T>
             </Pressable>
           </View>
         )}
@@ -112,11 +109,6 @@ export default function Accounts() {
         <Button big onPress={() => open(ACCOUNTS[index], setAccount)}>
           {`Continue as ${ACCOUNTS[index].name}`}
         </Button>
-        <Tinted>
-          <T size={14} color={C.ink2}>
-            Try it: send money as Amel, then switch to Yassine to stop it. Switch account any time with the button at the top right.
-          </T>
-        </Tinted>
         <Button look="quiet" icon="settings-outline" onPress={() => router.push("/settings")}>
           {settings.mode === "demo" ? "Settings (demo mode)" : "Settings (live mode)"}
         </Button>

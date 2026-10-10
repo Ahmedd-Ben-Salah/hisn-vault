@@ -61,6 +61,7 @@ export interface StateView {
   vaultId: string | null;
   topicId: string | null;
   chainId: number;
+  usdc?: string;
   balances: { hbar: string; usdc: string };
   gasReserve: string;
   limits: { hbar: LimitsView; usdc: LimitsView };
@@ -86,8 +87,6 @@ export interface StateView {
     maxDeadline: number;
   };
   pendingCount: number;
-  /** USDC token address used by this vault. */
-  usdc?: string;
 }
 
 export type ChangeKindName = (typeof CHANGE_KIND_NAMES)[number];

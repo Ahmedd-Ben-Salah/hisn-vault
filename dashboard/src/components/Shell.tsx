@@ -67,7 +67,7 @@ function Banner() {
           <p className="mx-auto flex max-w-7xl items-center gap-2 text-sm">
             <Icon name="warn" size={16} />
             <span>
-              <strong className="text-ink">Simulated data.</strong> Nothing on this screen is on testnet. Use the simulator (bottom right) to play the puck, the alarm light and the guardian.
+              <strong className="text-ink">Simulated data.</strong> Nothing on this screen is on testnet.
             </span>
           </p>
         </div>

@@ -227,7 +227,7 @@ export function Address({ value }: { value: string }) {
         {open ? value : short}
       </T>
       <T size={13} weight="bold" color={C.muted}>
-        {open ? (copied ? "Copied" : "Tap to copy") : "Tap to see all"}
+        {open ? (copied ? "Copied" : "Copy") : "Show all"}
       </T>
     </Pressable>
   );
