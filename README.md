@@ -26,6 +26,14 @@ Most payment scams do not break anything. The victim is talked into sending the 
 
 The rules live in the contract and the release is run by the Hedera network itself. Our server only carries messages: it cannot move the money, speed a payment up, or hold one back.
 
+## The devices
+
+<p align="center">
+  <img src="docs/assets/devices.jpg" alt="The Hisn puck and the guardian's alarm light" width="100%">
+</p>
+
+<p align="center"><sub><b>Left:</b> the owner's puck. ESP32, OLED screen, three buttons and a PIN; it shows what is being signed and signs it. <b>Right:</b> the guardian's alarm light. ESP32, LEDs, buzzer and one STOP button. Both run on battery and talk to the relayer over Wi-Fi.</sub></p>
+
 ## Pitch deck
 
 <p align="center">
