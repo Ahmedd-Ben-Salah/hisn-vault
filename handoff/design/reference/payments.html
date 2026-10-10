@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hisn: payments</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap">
+<style>
+body{margin:0}
+a{color:#0B1F3A;text-decoration:none}a:hover{color:#0F6B48}
+</style>
+</head>
+<body>
+<div style="width: 1440px; height: 900px; box-sizing: border-box; background: #FFFFFF; display: flex; flex-direction: column; font-family: 'Figtree', sans-serif; color: #0B1F3A">
+  <div style="height: 72px; flex: none; box-sizing: border-box; border-bottom: 1px solid #E3E8EF; display: flex; align-items: center; justify-content: space-between; padding: 0 60px">
+    <div style="display: flex; align-items: center; gap: 10px"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><rect x="16" y="12" width="22" height="76" rx="6" fill="#0B1F3A"/><rect x="36" y="40" width="28" height="18" fill="#0B1F3A"/><rect x="62" y="12" width="22" height="52" rx="6" fill="#0B1F3A"/><rect x="62" y="74" width="22" height="14" rx="5" fill="#1D4ED8"/></svg><div style="font-size: 26px; font-weight: 900; letter-spacing: -0.5px">hisn</div></div>
+    <div style="display: flex; gap: 6px; font-size: 16px; font-weight: 700">
+      <a href="home.html" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">Home</a>
+      <a href="payments.html" style="padding: 10px 18px; border-radius: 999px; background: #EEF2F8">Payments</a>
+      <a href="people.html" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">People</a>
+      <a href="protection.html" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">Protection</a>
+      <a href="helper.html" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">Helper</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px">
+      <div style="font-size: 13px; font-weight: 700; color: #4B5B73; border: 1.5px solid #C7D0DD; padding: 5px 12px; border-radius: 999px">Testnet</div>
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: #0B1F3A; color: #FFFFFF; font-weight: 800; display: flex; align-items: center; justify-content: center">A</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; box-sizing: border-box; padding: 34px 150px 30px; display: flex; gap: 48px">
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: flex; justify-content: space-between; align-items: center">
+        <div style="font-size: 44px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.05">Payments</div>
+        <a href="send.html" style="font-size: 17px; font-weight: 800; height: 54px; padding: 0 30px; border-radius: 999px; background: #1D4ED8; color: #FFFFFF; display: flex; align-items: center">Send</a>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center">
+        <button style="font: inherit; font-size: 15px; font-weight: 800; height: 42px; padding: 0 18px; border-radius: 999px; border: 0; background: #0B1F3A; color: #FFFFFF">All</button>
+        <button style="font: inherit; font-size: 15px; font-weight: 800; height: 42px; padding: 0 18px; border-radius: 999px; border: 0; background: #FBF0D9; color: #6B4E00">Waiting · 1</button>
+        <button style="font: inherit; font-size: 15px; font-weight: 800; height: 42px; padding: 0 18px; border-radius: 999px; border: 0; background: #EEF2F8; color: #0B1F3A">Paid</button>
+        <button style="font: inherit; font-size: 15px; font-weight: 800; height: 42px; padding: 0 18px; border-radius: 999px; border: 0; background: #EEF2F8; color: #0B1F3A">Stopped</button>
+        <label style="margin-left: auto; display: flex; align-items: center; gap: 8px; width: 260px; height: 42px; box-sizing: border-box; border: 1.5px solid #C7D0DD; border-radius: 999px; padding: 0 16px; color: #4B5B73"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input type="text" placeholder="Search" aria-label="Search payments" style="border: 0; outline: 0; font: inherit; font-size: 15px; flex: 1; min-width: 0; background: transparent; color: #0B1F3A"></label>
+      </div>
+
+      <div style="flex: 1; min-height: 0; display: flex; flex-direction: column">
+        
+          <div>
+            <div style="display: block; font-size: 14px; font-weight: 800; color: #4B5B73; padding: 12px 0 6px">Today</div>
+            <a href="payment-detail.html" style="display: flex; align-items: center; gap: 16px; padding: 11px 0; border-top: 1px solid #E3E8EF">
+              <span style="width: 46px; height: 46px; border-radius: 50%; background: #FBF0D9; color: #6B4E00; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">N</span>
+              <span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 700">New recipient</span><span style="display: block; font-size: 14px; color: #4B5B73; font-weight: 400">16:39 · 0x5aAe ... 1BeAed</span></span>
+              <span style="text-align: right"><span style="display: block; font-size: 17px; font-weight: 800">100.00 USDC</span><span style="display: block; font-size: 14px; font-weight: 600; color: #6B4E00">Waiting, leaves 16:42</span></span>
+            </a>
+          </div>
+        
+          <div>
+            <div style="display: none; font-size: 14px; font-weight: 800; color: #4B5B73; padding: 12px 0 6px"></div>
+            <a href="payment-detail.html" style="display: flex; align-items: center; gap: 16px; padding: 11px 0; border-top: 1px solid #E3E8EF">
+              <span style="width: 46px; height: 46px; border-radius: 50%; background: #EEF2F8; color: #0B1F3A; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">I</span>
+              <span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 700">Internet bill</span><span style="display: block; font-size: 14px; color: #4B5B73; font-weight: 400">11:02 · paid by your helper</span></span>
+              <span style="text-align: right"><span style="display: block; font-size: 17px; font-weight: 800">-15.00 USDC</span><span style="display: block; font-size: 14px; font-weight: 600; color: #4B5B73">Paid</span></span>
+            </a>
+          </div>
+        
+          <div>
+            <div style="display: block; font-size: 14px; font-weight: 800; color: #4B5B73; padding: 12px 0 6px">Yesterday</div>
+            <a href="payment-detail.html" style="display: flex; align-items: center; gap: 16px; padding: 11px 0; border-top: 1px solid #E3E8EF">
+              <span style="width: 46px; height: 46px; border-radius: 50%; background: #EEF2F8; color: #0B1F3A; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">S</span>
+              <span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 700">Sami</span><span style="display: block; font-size: 14px; color: #4B5B73; font-weight: 400">18:20</span></span>
+              <span style="text-align: right"><span style="display: block; font-size: 17px; font-weight: 800">-20.00 USDC</span><span style="display: block; font-size: 14px; font-weight: 600; color: #4B5B73">Paid</span></span>
+            </a>
+          </div>
+        
+          <div>
+            <div style="display: block; font-size: 14px; font-weight: 800; color: #4B5B73; padding: 12px 0 6px">Earlier</div>
+            <a href="payment-detail.html" style="display: flex; align-items: center; gap: 16px; padding: 11px 0; border-top: 1px solid #E3E8EF">
+              <span style="width: 46px; height: 46px; border-radius: 50%; background: #FBE4DF; color: #B02A15; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">N</span>
+              <span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 700">New recipient</span><span style="display: block; font-size: 14px; color: #4B5B73; font-weight: 400">2 Oct, 09:14 · 0x91f0 ... 77Cd</span></span>
+              <span style="text-align: right"><span style="display: block; font-size: 17px; font-weight: 800">400.00 USDC</span><span style="display: block; font-size: 14px; font-weight: 600; color: #B02A15">Stopped by Sami</span></span>
+            </a>
+          </div>
+        
+          <div>
+            <div style="display: none; font-size: 14px; font-weight: 800; color: #4B5B73; padding: 12px 0 6px"></div>
+            <a href="payment-detail.html" style="display: flex; align-items: center; gap: 16px; padding: 11px 0; border-top: 1px solid #E3E8EF">
+              <span style="width: 46px; height: 46px; border-radius: 50%; background: #EEF2F8; color: #0B1F3A; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">P</span>
+              <span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 700">Pharmacy</span><span style="display: block; font-size: 14px; color: #4B5B73; font-weight: 400">30 Sep, 16:45</span></span>
+              <span style="text-align: right"><span style="display: block; font-size: 17px; font-weight: 800">-32.50 USDC</span><span style="display: block; font-size: 14px; font-weight: 600; color: #4B5B73">Paid</span></span>
+            </a>
+          </div>
+        
+          <div>
+            <div style="display: none; font-size: 14px; font-weight: 800; color: #4B5B73; padding: 12px 0 6px"></div>
+            <a href="payment-detail.html" style="display: flex; align-items: center; gap: 16px; padding: 11px 0; border-top: 1px solid #E3E8EF">
+              <span style="width: 46px; height: 46px; border-radius: 50%; background: #DDF1E7; color: #0F4A33; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">T</span>
+              <span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 700">Top-up</span><span style="display: block; font-size: 14px; color: #4B5B73; font-weight: 400">28 Sep, 10:03</span></span>
+              <span style="text-align: right"><span style="display: block; font-size: 17px; font-weight: 800">+200.00 USDC</span><span style="display: block; font-size: 14px; font-weight: 600; color: #0F6B48">Received</span></span>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+
+    <div style="width: 380px; flex: none; display: flex; flex-direction: column; gap: 16px; padding-top: 72px">
+      <div style="border: 1.5px solid #E3E8EF; border-radius: 28px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+        <div style="font-size: 18px; font-weight: 800">Since 28 September</div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px"><span style="color: #4B5B73">Paid out</span><span style="font-weight: 800">67.50 USDC</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px"><span style="color: #4B5B73">Waiting now</span><span style="font-weight: 800; color: #6B4E00">100.00 USDC</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px"><span style="color: #4B5B73">Stopped</span><span style="font-weight: 800; color: #B02A15">400.00 USDC</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px"><span style="color: #4B5B73">Received</span><span style="font-weight: 800; color: #0F6B48">200.00 USDC</span></div>
+      </div>
+      <div style="background: #FBE9E5; border-radius: 28px; padding: 22px 24px">
+        <div style="font-size: 18px; font-weight: 800; color: #7A1D0E">1 payment stopped</div>
+        <div style="font-size: 15px; color: #7A1D0E; margin-top: 4px; line-height: 1.4">On 2 October, Sami stopped 400.00 USDC going to a new address. The money never left your account.</div>
+      </div>
+      <a href="#export" style="font-size: 15px; font-weight: 700; text-decoration: underline; padding: 0 8px">Download a record of all payments</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

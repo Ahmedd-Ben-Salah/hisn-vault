@@ -1,0 +1,971 @@
+import {
+  HBAR,
+  USDC_TESTNET,
+  Tier,
+  TIER_NAMES,
+  predictTier,
+  type ChangeView,
+  type HcsMessage,
+  type HcsType,
+  type LimitsView,
+  type PaymentView,
+  type RequestView,
+  type StateView,
+  type TimelineEntry,
+} from "@hisn/shared";
+import { parseIntent } from "../lib/agentRules";
+import { money, toRaw } from "../lib/format";
+import type { AgentAction, AgentReply, AgentTurn, ChangeRequestView, HisnSource, SimControls, Snapshot, TierName } from "./types";
+
+export const MOCK = {
+  vault: "0x00000000000000000000000000000000004a3f21",
+  topic: "0.0.4865830",
+  puck: "0x7a1c3e5b9d2f4a6c8e0b1d3f5a7c9e1b3d5f7a91",
+  guardians: ["0x2b4d6f8a0c2e4a6b8d0f2a4c6e8b0d2f4a6c8e01", "0x9c8b7a6f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c02"],
+  watchers: ["0x5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e03"],
+  agent: "0x3f2e1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f04",
+  payees: {
+    steg: "0x1111aa22bb33cc44dd55ee66ff7788990011aa05",
+    pharmacy: "0x2222bb33cc44dd55ee66ff778899001122bb0006",
+    sonia: "0x3333cc44dd55ee66ff77889900112233cc000007",
+    landlord: "0x4444dd55ee66ff7788990011223344dd00000008",
+  },
+  strangers: [
+    "0x8d1fe0c4b2a39e7d6c5b4a3f2e1d0c9b8a7f6e51",
+    "0xa7c3e9f1b5d2084c6e1a3b5d7f9e2c4a6b8d0f17",
+    "0x4f9e2d7c1b8a6e3d5c0f9b2a7e4d1c8b5a3f6e29",
+  ],
+} as const;
+
+const RELAYER_ACCOUNT = "0.0.5104322";
+const DAY = 86400;
+
+type LedgerKind = "instant" | "wait" | "agent";
+interface LedgerEntry {
+  kind: LedgerKind;
+  token: string;
+  amount: bigint;
+  at: number;
+  pid: number;
+}
+
+interface Tagged {
+  entry: TimelineEntry;
+  pid: number | null;
+  rid: number | null;
+}
+
+function nowSec(): number {
+  return Math.floor(Date.now() / 1000);
+}
+
+let lastStamp = 0;
+
+function stamp(at: number): string {
+  const base = at * 1e9 + Math.floor(Math.random() * 4e8);
+  lastStamp = Math.max(base, lastStamp + 1.7e6 + Math.floor(Math.random() * 1e6));
+  const sec = Math.floor(lastStamp / 1e9);
+  return `${sec}.${String(lastStamp - sec * 1e9).padStart(9, "0")}`;
+}
+
+function nanos(): string {
+  return String(Math.floor(Math.random() * 1e9)).padStart(9, "0");
+}
+
+function fakeHex(n: number): string {
+  let s = "0x";
+  for (let i = 0; i < n; i++) s += Math.floor(Math.random() * 16).toString(16);
+  return s;
+}
+
+function usdc(v: string): string {
+  return (toRaw(v, USDC_TESTNET) ?? 0n).toString();
+}
+
+function hbar(v: string): string {
+  return (toRaw(v, HBAR) ?? 0n).toString();
+}
+
+function limits(scale: (v: string) => string): LimitsView {
+  return { instantMax: scale("50"), waitMax: scale("500"), dailyCap: scale("100"), agentDailyMax: scale("20") };
+}
+
+export class MockSource implements HisnSource {
+  readonly kind = "mock" as const;
+  private listeners = new Set<() => void>();
+  private snap!: Snapshot;
+  private state!: StateView;
+  private payments: PaymentView[] = [];
+  private changes: ChangeView[] = [];
+  private requests: RequestView[] = [];
+  private changeReqs: ChangeRequestView[] = [];
+  private nextChangeReq = 1;
+  private requestedAt = new Map<number, number>();
+  private reqOfPayment = new Map<number, number>();
+  private tagged: Tagged[] = [];
+  private agentTurns: AgentTurn[] = [];
+  private ledger: LedgerEntry[] = [];
+  private heldHcs: Array<() => void> = [];
+  private nextPayment = 1;
+  private nextRequest = 1;
+  private nextChange = 1;
+  private autoPuck = true;
+  private serverOn = true;
+  private ticker: ReturnType<typeof setInterval> | null = null;
+  readonly sim: SimControls;
+
+  constructor(scene?: string | null) {
+    this.seed();
+    if (scene) this.scene(scene);
+    const self = this;
+    this.sim = {
+      kind: "mock",
+      get autoPuck() {
+        return self.autoPuck;
+      },
+      setAutoPuck: (on) => {
+        this.autoPuck = on;
+        this.publish();
+      },
+      get serverOn() {
+        return self.serverOn;
+      },
+      setServerOn: (on) => this.setServer(on),
+      puckSign: (rid) => this.puckSign(rid),
+      puckReject: (rid) => this.puckReject(rid),
+      puckSignChange: (rid) => this.puckSignChange(rid),
+      puckReconfirm: (pid) => this.reconfirm(pid),
+      puckCancel: (pid) => this.cancel(pid),
+      guardianStop: (pid, who) => this.veto(pid, who),
+      guardianApprove: (pid) => this.approve(pid),
+      freeze: (who) => this.freeze(who),
+      proposeChange: (kind, fields) => this.proposeChange(kind, fields),
+      approveChange: (cid) => this.approveChange(cid),
+      vetoChange: (cid) => this.vetoChange(cid),
+      reset: () => {
+        this.seed();
+        this.publish();
+      },
+    };
+    this.publish();
+  }
+
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    if (!this.ticker) this.ticker = setInterval(() => this.tick(), 1000);
+    return () => {
+      this.listeners.delete(listener);
+      if (this.listeners.size === 0 && this.ticker) {
+        clearInterval(this.ticker);
+        this.ticker = null;
+      }
+    };
+  }
+
+  getSnapshot(): Snapshot {
+    return this.snap;
+  }
+
+  async timeline(paymentId: number): Promise<TimelineEntry[]> {
+    const rid = this.reqOfPayment.get(paymentId) ?? null;
+    return this.tagged
+      .filter((t) => t.pid === paymentId || (rid !== null && t.rid === rid))
+      .map((t) => t.entry)
+      .sort((a, b) => a.at - b.at);
+  }
+
+  async requestPayment(to: string, tokenAddr: string, amountRaw: string): Promise<RequestView> {
+    return this.createRequest(to, tokenAddr, amountRaw, "dashboard");
+  }
+
+  async requestStop(paymentId: number): Promise<void> {
+    this.cancel(paymentId);
+  }
+
+  async requestFreeze(): Promise<void> {
+    this.freeze("puck");
+  }
+
+  async previewTier(to: string, tokenAddr: string, amountRaw: string): Promise<TierName> {
+    const now = nowSec();
+    const lim = tokenAddr === HBAR ? this.state.limits.hbar : this.state.limits.usdc;
+    const payee = this.state.payees.find((p) => p.address.toLowerCase() === to.toLowerCase());
+    const tier = predictTier({
+      amount: BigInt(amountRaw),
+      isPayee: !!payee,
+      pastProbation: !!payee && now - payee.since >= this.state.immutables.probation,
+      vaultBalance: this.balanceOf(tokenAddr),
+      instantSpent2d: this.rolling("instant", tokenAddr, now),
+      waitQueued2d: this.rolling("wait", tokenAddr, now),
+      limits: {
+        instantMax: BigInt(lim.instantMax),
+        waitMax: BigInt(lim.waitMax),
+        dailyCap: BigInt(lim.dailyCap),
+        agentDailyMax: BigInt(lim.agentDailyMax),
+      },
+    });
+    return TIER_NAMES[tier] as TierName;
+  }
+
+  async requestChange(kind: ChangeView["kind"], fields: Record<string, string>): Promise<ChangeRequestView> {
+    if (this.changeReqs.some((c) => c.status === "waiting_puck")) throw new Error("A change is already waiting on the puck. Sign or reject it there first.");
+    const { label, ...rest } = fields;
+    const c: ChangeRequestView = { reqId: this.nextChangeReq++, kind, fields: rest, ...(label ? { label: label.slice(0, 16) } : {}), status: "waiting_puck" };
+    this.changeReqs.push(c);
+    this.publish();
+    if (this.autoPuck) setTimeout(() => this.puckSignChange(c.reqId), 3000);
+    return { ...c };
+  }
+
+  private puckSignChange(rid: number): void {
+    const c = this.changeReqs.find((x) => x.reqId === rid);
+    if (!c || c.status !== "waiting_puck") return;
+    this.proposeChange(c.kind, c.label ? { ...c.fields, label: c.label } : c.fields);
+    this.changeReqs = this.changeReqs.map((x) => (x.reqId === rid ? { ...x, status: "proposed", changeId: this.nextChange - 1 } : x));
+    this.publish();
+  }
+
+  async agentChat(message: string): Promise<AgentReply> {
+    const now = nowSec();
+    this.agentTurns = [...this.agentTurns, { role: "owner", text: message, at: now, actions: [] }];
+    this.publish();
+    await new Promise((r) => setTimeout(r, 700));
+    const reply = this.agentDecide(message);
+    this.agentTurns = [...this.agentTurns, { role: "agent", text: reply.reply, at: nowSec(), actions: reply.actions }];
+    this.publish();
+    return reply;
+  }
+
+  async executeByHand(paymentId: number): Promise<string> {
+    const p = this.find(paymentId);
+    if (!p) throw new Error("No such payment");
+    const now = nowSec();
+    if (!p.confirmed || now < p.releaseAt || p.status !== "PENDING") throw new Error("This payment cannot be released yet");
+    this.pay(p, "relayer");
+    return p.txs.executed ?? "";
+  }
+
+  async applyChange(changeId: number): Promise<string> {
+    const c = this.changes.find((x) => x.id === changeId);
+    if (!c) throw new Error("No such change");
+    const now = nowSec();
+    if (c.status !== "PENDING" || now < c.readyAt || (c.needsApproval && !c.approver) || c.keyEpoch !== this.state.keyEpoch) {
+      throw new Error("This change is not ready");
+    }
+    const tx = this.tx(now);
+    this.update(c, { status: "EXECUTED" });
+    this.applyEffect(c);
+    this.event("ChangeExecuted", null, null, tx);
+    this.publish();
+    return tx;
+  }
+
+  async exportEvidence(paymentId: number): Promise<unknown> {
+    const p = this.find(paymentId);
+    return {
+      simulated: true,
+      vault: MOCK.vault,
+      topic: MOCK.topic,
+      payment: p,
+      timeline: await this.timeline(paymentId),
+      exportedAt: new Date().toISOString(),
+    };
+  }
+
+  private seed(): void {
+    const now = nowSec();
+    lastStamp = 0;
+    this.payments = [];
+    this.changes = [];
+    this.requests = [];
+    this.changeReqs = [];
+    this.nextChangeReq = 1;
+    this.tagged = [];
+    this.ledger = [];
+    this.agentTurns = [];
+    this.heldHcs = [];
+    this.requestedAt.clear();
+    this.reqOfPayment.clear();
+    this.nextPayment = 1;
+    this.nextRequest = 1;
+    this.nextChange = 1;
+    this.serverOn = true;
+    this.state = {
+      vault: MOCK.vault,
+      vaultId: "0.0.4865825",
+      topicId: MOCK.topic,
+      chainId: 296,
+      balances: { hbar: hbar("532.10"), usdc: usdc("1240.50") },
+      gasReserve: hbar("10"),
+      limits: { hbar: limits(hbar), usdc: limits(usdc) },
+      coolOff: 60,
+      frozenUntil: 0,
+      frozen: false,
+      epoch: 3,
+      keyEpoch: 5,
+      puck: MOCK.puck,
+      guardians: [...MOCK.guardians],
+      watchers: [...MOCK.watchers],
+      agent: MOCK.agent,
+      payees: [
+        { address: MOCK.payees.steg, label: "STEG electricity", since: now - 40 * DAY },
+        { address: MOCK.payees.pharmacy, label: "Pharmacie El Amen", since: now - 31 * DAY },
+        { address: MOCK.payees.sonia, label: "Sonia, my daughter", since: now - 90 * DAY },
+        { address: MOCK.payees.landlord, label: "Landlord, Mr Karim", since: now - 5 * DAY },
+      ],
+      devices: [
+        { id: "puck-1", role: "puck", address: MOCK.puck, online: true, lastSeen: now },
+        { id: "light-1", role: "watcher", address: MOCK.watchers[0], online: true, lastSeen: now },
+        { id: "page-yassine", role: "page", address: MOCK.guardians[0], online: true, lastSeen: now },
+      ],
+      immutables: {
+        minCoolOff: 60,
+        settingsDelay: 300,
+        recoveryDelay: 600,
+        approvalWindow: 1800,
+        freezeMax: 600,
+        probation: 0,
+        maxPending: 5,
+        maxDeadline: 600,
+      },
+      pendingCount: 0,
+      pq: { root: "0x7a1c0de5c0ffee000000000000000000000000000000000000000000000000ab", height: 8, used: 12, capacity: 256 },
+    };
+
+    this.history(now - 2 * DAY - 3600, MOCK.payees.steg, USDC_TESTNET, usdc("32.40"), "INSTANT", "vault");
+    this.history(now - DAY - 7200, MOCK.payees.pharmacy, USDC_TESTNET, usdc("6.00"), "INSTANT", "agent");
+    this.history(now - DAY + 1800, MOCK.payees.landlord, USDC_TESTNET, usdc("180.00"), "WAIT", "network");
+    this.history(now - 3 * 3600, MOCK.strangers[0], USDC_TESTNET, usdc("100.00"), "WAIT", "vetoed");
+
+    const c: ChangeView = {
+      id: this.nextChange++,
+      kind: "SET_LIMITS",
+      fields: { token: "USDC", instantMax: "80", waitMax: "500", dailyCap: "150", agentDailyMax: "20" },
+      readyAt: now + 240,
+      expiresAt: now + 240 + 1800,
+      proposer: MOCK.puck,
+      approver: null,
+      keyEpoch: this.state.keyEpoch,
+      status: "PENDING",
+      needsApproval: true,
+    };
+    this.changes.push(c);
+    this.eventAt(now - 60, "ChangeProposed", null, null, this.tx(now - 60));
+  }
+
+  private scene(name: string): void {
+    const back = (secs: number) => {
+      const p = this.payments[this.payments.length - 1];
+      p.proposedAt -= secs;
+      p.confirmFrom -= secs;
+      p.releaseAt -= secs;
+      p.expiresAt -= secs;
+      const rid = this.reqOfPayment.get(p.id);
+      for (const t of this.tagged) {
+        if (t.pid !== p.id && (rid === undefined || t.rid !== rid)) continue;
+        t.entry = { ...t.entry, at: t.entry.at - secs };
+        if (t.entry.consensusTimestamp) {
+          const [sec, ns] = t.entry.consensusTimestamp.split(".");
+          t.entry.consensusTimestamp = `${Number(sec) - secs}.${ns}`;
+        }
+      }
+    };
+    if (name === "waiting" || name === "confirm" || name === "releasing") {
+      const r = this.createRequest(MOCK.strangers[0], USDC_TESTNET, usdc("100"), "dashboard");
+      this.puckSign(r.reqId, true);
+      if (name === "waiting") back(12);
+      if (name === "confirm") back(40);
+      if (name === "releasing") {
+        back(36);
+        this.reconfirm(this.payments[this.payments.length - 1].id);
+      }
+    } else if (name === "approval") {
+      const r = this.createRequest(MOCK.strangers[1], USDC_TESTNET, usdc("800"), "dashboard");
+      this.puckSign(r.reqId, true);
+      back(15);
+    } else if (name === "frozen") {
+      this.freeze("guardian");
+    }
+  }
+
+  private history(at: number, to: string, tokenAddr: string, amountRaw: string, tier: "INSTANT" | "WAIT", end: "vault" | "agent" | "network" | "vetoed"): void {
+    const id = this.nextPayment++;
+    const label = this.labelOf(to);
+    const cool = this.state.coolOff;
+    const p: PaymentView = {
+      id,
+      to,
+      token: tokenAddr,
+      amount: amountRaw,
+      tier,
+      status: end === "vetoed" ? "VETOED" : "EXECUTED",
+      proposedAt: at,
+      releaseAt: tier === "INSTANT" ? at : at + cool,
+      confirmFrom: tier === "INSTANT" ? at : at + Math.floor(cool / 2),
+      expiresAt: tier === "INSTANT" ? at : at + cool + 1800,
+      epoch: this.state.epoch,
+      confirmed: end === "network",
+      schedule: end === "network" ? fakeHex(40) : null,
+      label,
+      newRecipient: label === null,
+      txs: {},
+      executedBy: end === "vetoed" ? undefined : end,
+    };
+    const body = this.payBody(p);
+    if (end === "agent") {
+      p.txs.executed = this.tx(at);
+      this.hcsAt(at, "AGENT_PAID", null, body, MOCK.agent, id);
+      this.eventAt(at, "AgentPaid", id, null, p.txs.executed);
+      this.ledger.push({ kind: "agent", token: tokenAddr, amount: BigInt(amountRaw), at, pid: id });
+    } else {
+      this.hcsAt(at - 8, "REQUEST", null, body, null, id);
+      this.hcsAt(at - 4, "PAY_SIGNED", null, body, MOCK.puck, id);
+      p.txs.proposed = this.tx(at);
+      this.eventAt(at, "Proposed", id, null, p.txs.proposed);
+      this.hcsAt(at + 1, "PROPOSED", id, { ...body, tier }, null, null);
+      if (tier === "INSTANT") {
+        p.txs.executed = p.txs.proposed;
+        this.eventAt(at, "Executed", id, null, p.txs.executed);
+        this.ledger.push({ kind: "instant", token: tokenAddr, amount: BigInt(amountRaw), at, pid: id });
+      } else {
+        this.hcsAt(at + 3, "ALERT_ACK", id, { device: "light-1" }, MOCK.watchers[0], null);
+        if (end === "network") {
+          this.ledger.push({ kind: "wait", token: tokenAddr, amount: BigInt(amountRaw), at, pid: id });
+          this.hcsAt(at + 34, "RECONFIRM_SIGNED", id, { question: "no one told me what to say" }, MOCK.puck, null);
+          p.txs.confirmed = this.tx(at + 35);
+          this.eventAt(at + 35, "Confirmed", id, null, p.txs.confirmed);
+          this.hcsAt(at + 36, "CONFIRMED", id, { schedule: p.schedule ?? "" }, null, null);
+          p.txs.executed = this.tx(at + cool + 5);
+          this.eventAt(at + cool + 5, "Executed", id, null, p.txs.executed);
+          this.hcsAt(at + cool + 7, "RELEASED", id, { by: "network" }, null, null);
+        } else {
+          this.hcsAt(at + 21, "VETO_SIGNED", id, { device: "page-yassine" }, MOCK.guardians[0], null);
+          p.txs.vetoed = this.tx(at + 22);
+          this.eventAt(at + 22, "Vetoed", id, null, p.txs.vetoed);
+          this.hcsAt(at + 23, "VETOED", id, { by: "guardian" }, null, null);
+        }
+      }
+    }
+    this.payments.push(p);
+  }
+
+  private publish(): void {
+    const now = nowSec();
+    this.state = {
+      ...this.state,
+      frozen: this.state.frozenUntil > now,
+      pendingCount: this.payments.filter((p) => p.status === "PENDING" && p.epoch === this.state.epoch && now <= p.expiresAt).length,
+      devices: this.state.devices.map((d) => ({ ...d, online: this.serverOn, lastSeen: this.serverOn ? now : d.lastSeen })),
+    };
+    this.snap = {
+      state: this.state,
+      payments: [...this.payments].sort((a, b) => b.proposedAt - a.proposedAt),
+      changes: [...this.changes].sort((a, b) => b.id - a.id),
+      requests: [...this.requests],
+      changeRequests: [...this.changeReqs],
+      log: this.tagged.map((t) => t.entry).sort((a, b) => b.at - a.at),
+      agent: this.agentTurns,
+      connection: this.serverOn ? "mock" : "offline",
+      now,
+    };
+    for (const l of this.listeners) l();
+  }
+
+  private tick(): void {
+    const now = nowSec();
+    for (const r of this.requests) {
+      const at = this.requestedAt.get(r.reqId) ?? now;
+      if (r.status === "waiting_puck" && this.autoPuck && this.serverOn && now - at >= 3) this.puckSign(r.reqId, true);
+    }
+    for (const p of this.payments) {
+      if (p.status === "PENDING" && now > p.expiresAt) {
+        this.ledger = this.ledger.filter((e) => !(e.kind === "wait" && e.pid === p.id));
+        this.update(p, { status: "EXPIRED" });
+        this.event("Expired", p.id, null, this.tx(now));
+        continue;
+      }
+      if (p.status === "PENDING" && p.confirmed && p.epoch === this.state.epoch && now >= p.releaseAt + 3 && now <= p.expiresAt && this.state.frozenUntil <= now) {
+        this.pay(p, "network");
+      }
+    }
+    this.publish();
+  }
+
+  private setServer(on: boolean): void {
+    this.serverOn = on;
+    if (on) {
+      const held = this.heldHcs;
+      this.heldHcs = [];
+      for (const f of held) f();
+    }
+    this.publish();
+  }
+
+  private find(id: number): PaymentView | undefined {
+    return this.payments.find((p) => p.id === id);
+  }
+
+  private update<T extends object>(obj: T, patch: Partial<T>): void {
+    Object.assign(obj, patch);
+  }
+
+  private labelOf(address: string): string | null {
+    return this.state.payees.find((p) => p.address.toLowerCase() === address.toLowerCase())?.label ?? null;
+  }
+
+  private tx(at: number): string {
+    return `${RELAYER_ACCOUNT}@${at}.${nanos()}`;
+  }
+
+  private hcsAt(at: number, type: HcsType, ref: number | null, body: HcsMessage["body"], signer: string | null, pid: number | null, rid: number | null = null): void {
+    const msg: HcsMessage = {
+      v: 1,
+      type,
+      vault: MOCK.vault,
+      ref: ref ?? rid ?? 0,
+      at,
+      body,
+      ...(signer ? { signer, sig: fakeHex(130) } : {}),
+    };
+    const consensusTimestamp = stamp(at);
+    const entry: TimelineEntry = {
+      kind: "hcs",
+      name: type,
+      at: Number(consensusTimestamp.split(".")[0]),
+      consensusTimestamp,
+      verified: true,
+      ...(signer ? { signer } : {}),
+      hcs: msg,
+    };
+    this.tagged.push({ entry, pid: pid ?? ref, rid });
+  }
+
+  private hcs(type: HcsType, ref: number | null, body: HcsMessage["body"], signer: string | null, rid: number | null = null): void {
+    const post = () => this.hcsAt(nowSec(), type, ref, body, signer, ref, rid);
+    if (this.serverOn) post();
+    else this.heldHcs.push(post);
+  }
+
+  private eventAt(at: number, name: string, pid: number | null, rid: number | null, tx: string): void {
+    this.tagged.push({ entry: { kind: "event", name, at, tx, verified: true }, pid, rid });
+  }
+
+  private event(name: string, pid: number | null, rid: number | null, tx: string): void {
+    this.eventAt(nowSec(), name, pid, rid, tx);
+  }
+
+  private payBody(p: { to: string; token: string; amount: string; label?: string | null }): HcsMessage["body"] {
+    return {
+      to: p.to,
+      token: p.token === HBAR ? "HBAR" : "USDC",
+      amount: money(p.amount, p.token),
+      label: p.label ?? "NEW RECIPIENT",
+    };
+  }
+
+  private rolling(kind: LedgerKind, tokenAddr: string, now: number): bigint {
+    const today = Math.floor(now / DAY);
+    return this.ledger
+      .filter((e) => e.kind === kind && e.token === tokenAddr && Math.floor(e.at / DAY) >= today - 1)
+      .reduce((s, e) => s + e.amount, 0n);
+  }
+
+  agentLeft(tokenAddr: string): bigint {
+    const lim = BigInt(tokenAddr === HBAR ? this.state.limits.hbar.agentDailyMax : this.state.limits.usdc.agentDailyMax);
+    const left = lim - this.rolling("agent", tokenAddr, nowSec());
+    return left > 0n ? left : 0n;
+  }
+
+  private balanceOf(tokenAddr: string): bigint {
+    return BigInt(tokenAddr === HBAR ? this.state.balances.hbar : this.state.balances.usdc);
+  }
+
+  private setBalance(tokenAddr: string, v: bigint): void {
+    this.state = {
+      ...this.state,
+      balances: tokenAddr === HBAR ? { ...this.state.balances, hbar: v.toString() } : { ...this.state.balances, usdc: v.toString() },
+    };
+  }
+
+  private createRequest(to: string, tokenAddr: string, amountRaw: string, source: "dashboard" | "agent", note?: string): RequestView {
+    const open = this.requests.find((r) => r.source === source && r.status === "waiting_puck");
+    if (open) throw new Error("One payment is already waiting on the puck. Approve or reject it there first.");
+    const r: RequestView = { reqId: this.nextRequest++, to, token: tokenAddr, amount: amountRaw, source, status: "waiting_puck", ...(note ? { note } : {}) };
+    this.requests.push(r);
+    this.requestedAt.set(r.reqId, nowSec());
+    this.hcs("REQUEST", null, { ...this.payBody({ to, token: tokenAddr, amount: amountRaw, label: this.labelOf(to) }), source }, null, r.reqId);
+    this.publish();
+    return { ...r };
+  }
+
+  private puckReject(rid: number): void {
+    const r = this.requests.find((x) => x.reqId === rid);
+    if (!r || r.status !== "waiting_puck") return;
+    this.update(r, { status: "rejected", reason: "The owner said no on the puck." });
+    this.publish();
+  }
+
+  private puckSign(rid: number, quiet = false): void {
+    const r = this.requests.find((x) => x.reqId === rid);
+    if (!r || r.status !== "waiting_puck") return;
+    const now = nowSec();
+    const fail = (reason: string) => {
+      this.update(r, { status: "failed", reason });
+      if (!quiet) this.publish();
+    };
+    if (this.state.frozenUntil > now) return fail("The account is frozen. Nothing can be sent until the freeze ends.");
+    const amt = BigInt(r.amount);
+    const bal = this.balanceOf(r.token);
+    const spendable = r.token === HBAR ? bal - BigInt(this.state.gasReserve) : bal;
+    if (amt > spendable) return fail(`Not enough ${r.token === HBAR ? "HBAR" : "USDC"} in the account.`);
+    const lim = r.token === HBAR ? this.state.limits.hbar : this.state.limits.usdc;
+    const payee = this.state.payees.find((p) => p.address.toLowerCase() === r.to.toLowerCase());
+    const tier = predictTier({
+      amount: amt,
+      isPayee: !!payee,
+      pastProbation: !!payee && now - payee.since >= this.state.immutables.probation,
+      vaultBalance: bal,
+      instantSpent2d: this.rolling("instant", r.token, now),
+      waitQueued2d: this.rolling("wait", r.token, now),
+      limits: {
+        instantMax: BigInt(lim.instantMax),
+        waitMax: BigInt(lim.waitMax),
+        dailyCap: BigInt(lim.dailyCap),
+        agentDailyMax: BigInt(lim.agentDailyMax),
+      },
+    });
+    if (tier !== Tier.INSTANT && this.state.pendingCount >= this.state.immutables.maxPending) {
+      return fail("Five payments are already waiting. Let one finish or cancel one first.");
+    }
+    this.hcs("PAY_SIGNED", null, this.payBody({ ...r, label: payee?.label ?? null }), MOCK.puck, r.reqId);
+    const id = this.nextPayment++;
+    const cool = this.state.coolOff;
+    const p: PaymentView = {
+      id,
+      to: r.to,
+      token: r.token,
+      amount: r.amount,
+      tier: TIER_NAMES[tier],
+      status: "PENDING",
+      proposedAt: now,
+      releaseAt: tier === Tier.INSTANT ? now : now + cool,
+      confirmFrom: tier === Tier.WAIT ? now + Math.floor(cool / 2) : now,
+      expiresAt: tier === Tier.INSTANT ? now : now + cool + this.state.immutables.approvalWindow,
+      epoch: this.state.epoch,
+      confirmed: false,
+      schedule: null,
+      label: payee?.label ?? null,
+      newRecipient: !payee,
+      txs: { proposed: this.tx(now) },
+    };
+    this.payments.push(p);
+    this.reqOfPayment.set(id, r.reqId);
+    this.update(r, { status: "proposed", paymentId: id });
+    this.event("Proposed", id, null, p.txs.proposed ?? "");
+    this.hcs("PROPOSED", id, { ...this.payBody(p), tier: p.tier }, null);
+    if (tier === Tier.INSTANT) {
+      this.ledger.push({ kind: "instant", token: p.token, amount: amt, at: now, pid: id });
+      this.pay(p, "vault");
+    } else {
+      if (tier === Tier.WAIT) this.ledger.push({ kind: "wait", token: p.token, amount: amt, at: now, pid: id });
+      setTimeout(() => {
+        if (p.status !== "PENDING") return;
+        this.hcs("ALERT_ACK", id, { device: "light-1" }, MOCK.watchers[0]);
+        this.publish();
+      }, 1800);
+    }
+    this.publish();
+  }
+
+  private pay(p: PaymentView, by: "vault" | "network" | "relayer" | "agent"): void {
+    const now = nowSec();
+    const tx = by === "vault" ? (p.txs.proposed ?? this.tx(now)) : this.tx(now);
+    this.setBalance(p.token, this.balanceOf(p.token) - BigInt(p.amount));
+    this.update(p, { status: "EXECUTED", executedBy: by, txs: { ...p.txs, executed: tx } });
+    this.event("Executed", p.id, null, tx);
+    if (by === "network" || by === "relayer") this.hcs("RELEASED", p.id, { by }, null);
+  }
+
+  private reconfirm(pid: number): void {
+    const p = this.find(pid);
+    const now = nowSec();
+    if (!p || p.status !== "PENDING" || p.tier !== "WAIT" || p.confirmed || now < p.confirmFrom || now > p.expiresAt) return;
+    if (p.epoch !== this.state.epoch) return;
+    this.hcs("RECONFIRM_SIGNED", pid, { question: "no one told me what to say" }, MOCK.puck);
+    this.confirm(p);
+  }
+
+  private approve(pid: number): void {
+    const p = this.find(pid);
+    const now = nowSec();
+    if (!p || p.status !== "PENDING" || p.tier !== "APPROVAL" || p.confirmed || now > p.expiresAt) return;
+    this.hcs("APPROVE_SIGNED", pid, { device: "page-yassine", spokeToOwner: true }, MOCK.guardians[0]);
+    this.confirm(p);
+  }
+
+  private confirm(p: PaymentView): void {
+    const now = nowSec();
+    const tx = this.tx(now);
+    const schedule = fakeHex(40);
+    this.update(p, { confirmed: true, schedule, txs: { ...p.txs, confirmed: tx } });
+    this.event("Confirmed", p.id, null, tx);
+    this.hcs(p.tier === "WAIT" ? "CONFIRMED" : "APPROVED", p.id, { schedule }, null);
+    if (now >= p.releaseAt) this.pay(p, "vault");
+    this.publish();
+  }
+
+  private veto(pid: number, who: "guardian" | "watcher"): void {
+    const p = this.find(pid);
+    if (!p || p.status !== "PENDING") return;
+    const signer = who === "guardian" ? MOCK.guardians[0] : MOCK.watchers[0];
+    this.hcs("VETO_SIGNED", pid, { device: who === "guardian" ? "page-yassine" : "light-1" }, signer);
+    const tx = this.tx(nowSec());
+    this.ledger = this.ledger.filter((e) => !(e.kind === "wait" && e.pid === pid));
+    this.update(p, { status: "VETOED", txs: { ...p.txs, vetoed: tx } });
+    this.event("Vetoed", pid, null, tx);
+    this.hcs("VETOED", pid, { by: who }, null);
+    this.publish();
+  }
+
+  private cancel(pid: number): void {
+    const p = this.find(pid);
+    if (!p || p.status !== "PENDING") return;
+    const tx = this.tx(nowSec());
+    this.ledger = this.ledger.filter((e) => !(e.kind === "wait" && e.pid === pid));
+    this.update(p, { status: "CANCELLED", txs: { ...p.txs, cancelled: tx } });
+    this.event("Cancelled", pid, null, tx);
+    this.hcs("CANCELLED", pid, { by: "puck" }, null);
+    this.publish();
+  }
+
+  private freeze(who: "puck" | "guardian" | "watcher"): void {
+    const now = nowSec();
+    const signer = who === "puck" ? MOCK.puck : who === "guardian" ? MOCK.guardians[0] : MOCK.watchers[0];
+    this.state = {
+      ...this.state,
+      frozenUntil: now + this.state.immutables.freezeMax,
+      epoch: this.state.epoch + 1,
+      keyEpoch: this.state.keyEpoch + 1,
+    };
+    for (const p of this.payments) {
+      if (p.status !== "PENDING") continue;
+      this.ledger = this.ledger.filter((e) => !(e.kind === "wait" && e.pid === p.id));
+      this.update(p, { status: "CANCELLED" });
+      this.event("Cancelled", p.id, null, this.tx(now));
+    }
+    this.event("Frozen", null, null, this.tx(now));
+    this.hcs("FROZEN", 0, { by: who, until: now + this.state.immutables.freezeMax }, signer);
+    this.publish();
+  }
+
+  private proposeChange(kind: ChangeView["kind"], fields: Record<string, string>): void {
+    const now = nowSec();
+    const safer = kind === "REMOVE_PAYEE" || kind === "REMOVE_WATCHER";
+    const wait = kind === "RECOVER_PUCK" ? this.state.immutables.recoveryDelay : safer ? 0 : this.state.immutables.settingsDelay;
+    const c: ChangeView = {
+      id: this.nextChange++,
+      kind,
+      fields,
+      readyAt: now + wait,
+      expiresAt: now + wait + this.state.immutables.approvalWindow,
+      proposer: kind === "RECOVER_PUCK" ? MOCK.guardians[0] : MOCK.puck,
+      approver: null,
+      keyEpoch: this.state.keyEpoch,
+      status: "PENDING",
+      needsApproval: !safer,
+    };
+    this.changes.push(c);
+    this.event("ChangeProposed", null, null, this.tx(now));
+    this.publish();
+  }
+
+  private approveChange(cid: number): void {
+    const c = this.changes.find((x) => x.id === cid);
+    if (!c || c.status !== "PENDING" || c.approver) return;
+    const approver = c.kind === "RECOVER_PUCK" ? MOCK.guardians[1] : MOCK.guardians[0];
+    this.update(c, { approver });
+    this.event("ChangeApproved", null, null, this.tx(nowSec()));
+    this.publish();
+  }
+
+  private vetoChange(cid: number): void {
+    const c = this.changes.find((x) => x.id === cid);
+    if (!c || c.status !== "PENDING") return;
+    this.update(c, { status: "VETOED" });
+    this.event("ChangeVetoed", null, null, this.tx(nowSec()));
+    this.publish();
+  }
+
+  private applyEffect(c: ChangeView): void {
+    const f = c.fields;
+    const s = this.state;
+    switch (c.kind) {
+      case "ADD_PAYEE":
+        this.state = { ...s, payees: [...s.payees, { address: f.address, label: f.label || null, since: nowSec() }] };
+        break;
+      case "REMOVE_PAYEE":
+        this.state = { ...s, payees: s.payees.filter((p) => p.address.toLowerCase() !== f.address.toLowerCase()) };
+        break;
+      case "SET_LIMITS": {
+        const isHbar = f.token === "HBAR";
+        const conv = isHbar ? hbar : usdc;
+        const next: LimitsView = {
+          instantMax: conv(f.instantMax),
+          waitMax: conv(f.waitMax),
+          dailyCap: conv(f.dailyCap),
+          agentDailyMax: conv(f.agentDailyMax),
+        };
+        this.state = { ...s, limits: isHbar ? { ...s.limits, hbar: next } : { ...s.limits, usdc: next } };
+        break;
+      }
+      case "SET_COOLOFF":
+        this.state = { ...s, coolOff: Math.max(s.immutables.minCoolOff, Number(f.seconds)) };
+        break;
+      case "SET_AGENT":
+        this.state = { ...s, agent: f.address || null, keyEpoch: s.keyEpoch + 1 };
+        break;
+      case "ADD_GUARDIAN":
+        this.state = { ...s, guardians: [...s.guardians, f.address], keyEpoch: s.keyEpoch + 1 };
+        break;
+      case "REMOVE_GUARDIAN":
+        this.state = { ...s, guardians: s.guardians.filter((g) => g !== f.address), keyEpoch: s.keyEpoch + 1 };
+        break;
+      case "ADD_WATCHER":
+        this.state = { ...s, watchers: [...s.watchers, f.address], keyEpoch: s.keyEpoch + 1 };
+        break;
+      case "REMOVE_WATCHER":
+        this.state = { ...s, watchers: s.watchers.filter((w) => w !== f.address), keyEpoch: s.keyEpoch + 1 };
+        break;
+      case "UNFREEZE":
+        this.state = { ...s, frozenUntil: 0 };
+        break;
+      case "RECOVER_PUCK":
+        this.state = { ...s, puck: f.newPuck, keyEpoch: s.keyEpoch + 1 };
+        break;
+    }
+  }
+
+  private agentDecide(message: string): AgentReply {
+    const s = this.state;
+    const intent = parseIntent(message, s.payees);
+    const now = nowSec();
+    if (intent.type === "balance") {
+      return {
+        reply: `You have ${money(s.balances.usdc, USDC_TESTNET)} and ${money(s.balances.hbar, HBAR)}. ${money(s.gasReserve, HBAR)} of the HBAR is kept aside to pay for the network's release calls.`,
+        actions: [],
+      };
+    }
+    if (intent.type === "allowance") {
+      return {
+        reply: `I can still pay ${money(this.agentLeft(USDC_TESTNET), USDC_TESTNET)} today, only to saved names. The vault counts today and yesterday together, and it enforces this, not me.`,
+        actions: [],
+      };
+    }
+    if (intent.type === "help") {
+      return {
+        reply:
+          "I pay small bills to names you have saved, inside the allowance the vault gives me. I can't approve, stop, change rules or raise my own limit. Try: \"Pay the STEG bill, 12 USDC\".",
+        actions: [],
+      };
+    }
+    const tokenAddr = intent.symbol === "HBAR" ? HBAR : USDC_TESTNET;
+    const raw = intent.amount ? toRaw(intent.amount, tokenAddr) : null;
+    if (raw === null || raw <= 0n) {
+      return { reply: "How much should I pay? Tell me the amount and who it's for.", actions: [] };
+    }
+    const to = intent.payee?.address ?? intent.address;
+    if (intent.flags.length > 0 || !intent.payee) {
+      const why =
+        intent.flags.length > 0
+          ? `This has signs to slow down for: ${intent.flags.join(", ")}.`
+          : "That's not a saved name, and I never pay new people.";
+      const action: AgentAction = {
+        kind: to ? "sent_to_puck" : "refused",
+        at: now,
+        payee: intent.payee?.label ?? null,
+        to: to ?? null,
+        token: tokenAddr,
+        amount: raw.toString(),
+        reason: why,
+      };
+      if (to) {
+        try {
+          const r = this.createRequest(to, tokenAddr, raw.toString(), "agent", why);
+          action.reqId = r.reqId;
+          this.autoPuckHold(r.reqId);
+        } catch (e) {
+          action.kind = "refused";
+          action.reason = `${why} ${(e as Error).message}`;
+        }
+      }
+      this.hcs("AGENT_REFUSED", null, { reason: why, amount: money(raw, tokenAddr) }, MOCK.agent);
+      return {
+        reply:
+          action.kind === "sent_to_puck"
+            ? `I won't pay this. ${why} I've sent it to your puck, where you can read it yourself and decide. Before you do, call someone you trust on a number you already know.`
+            : `I won't pay this. ${action.reason}`,
+        actions: [action],
+      };
+    }
+    const left = this.agentLeft(tokenAddr);
+    const payee = intent.payee;
+    if (now - payee.since < s.immutables.probation) {
+      const reason = "OnProbation: this name was saved too recently for me to pay.";
+      this.hcs("AGENT_REFUSED", null, { reason, amount: money(raw, tokenAddr) }, MOCK.agent);
+      return { reply: `The vault refused: ${payee.label} was saved too recently. You can still pay from the puck.`, actions: [{ kind: "refused", at: now, payee: payee.label, to: payee.address, token: tokenAddr, amount: raw.toString(), reason }] };
+    }
+    if (raw > left || s.frozenUntil > now) {
+      const reason = s.frozenUntil > now ? "IsFrozen: the account is frozen." : `OverAgentLimit: only ${money(left, tokenAddr)} left in my allowance.`;
+      const action: AgentAction = { kind: "sent_to_puck", at: now, payee: payee.label, to: payee.address, token: tokenAddr, amount: raw.toString(), reason };
+      try {
+        const r = this.createRequest(payee.address, tokenAddr, raw.toString(), "agent", reason);
+        action.reqId = r.reqId;
+      } catch (e) {
+        action.kind = "refused";
+        action.reason = `${reason} ${(e as Error).message}`;
+      }
+      this.hcs("AGENT_REFUSED", null, { reason, amount: money(raw, tokenAddr) }, MOCK.agent);
+      return {
+        reply:
+          action.kind === "sent_to_puck"
+            ? `The vault refused me: ${reason.split(": ")[1]} I've sent it to your puck instead, so you can approve it yourself.`
+            : `The vault refused me: ${action.reason.split(": ")[1]}`,
+        actions: [action],
+      };
+    }
+    const id = this.nextPayment++;
+    const tx = this.tx(now);
+    const p: PaymentView = {
+      id,
+      to: payee.address,
+      token: tokenAddr,
+      amount: raw.toString(),
+      tier: "INSTANT",
+      status: "PENDING",
+      proposedAt: now,
+      releaseAt: now,
+      confirmFrom: now,
+      expiresAt: now,
+      epoch: s.epoch,
+      confirmed: true,
+      schedule: null,
+      label: payee.label,
+      newRecipient: false,
+      txs: { executed: tx },
+    };
+    this.payments.push(p);
+    this.ledger.push({ kind: "agent", token: tokenAddr, amount: raw, at: now, pid: id });
+    this.setBalance(tokenAddr, this.balanceOf(tokenAddr) - raw);
+    this.update(p, { status: "EXECUTED", executedBy: "agent" });
+    this.event("AgentPaid", id, null, tx);
+    this.hcs("AGENT_PAID", id, this.payBody(p), MOCK.agent);
+    return {
+      reply: `Paid ${money(raw, tokenAddr)} to ${payee.label}. ${money(this.agentLeft(tokenAddr), tokenAddr)} left in my allowance today.`,
+      actions: [{ kind: "paid", at: now, payee: payee.label, to: payee.address, token: tokenAddr, amount: raw.toString(), reason: "Saved name, inside allowance", tx }],
+    };
+  }
+
+  private autoPuckHold(rid: number): void {
+    this.requestedAt.set(rid, nowSec() + 3600);
+  }
+}

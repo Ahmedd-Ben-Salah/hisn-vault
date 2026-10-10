@@ -1,0 +1,38 @@
+{
+  "name": "@hisn/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "local:chain": "tsx scripts/local-up.ts",
+    "start:local": "cross-env ENV_FILE=.env.local tsx src/index.ts",
+    "sim": "tsx src/sim/devices.ts",
+    "sim:local": "cross-env ENV_FILE=.env.local tsx src/sim/devices.ts",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run",
+    "e2e:local": "cross-env ENV_FILE=.env.local tsx scripts/e2e.ts",
+    "e2e:testnet": "cross-env E2E_TOKEN=HBAR E2E_WAIT_MS=180000 tsx scripts/e2e.ts",
+    "e2e:testnet:usdc": "cross-env E2E_WAIT_MS=180000 tsx scripts/e2e.ts",
+    "demo:check": "tsx scripts/demo-check.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.1",
+    "@fastify/websocket": "^11.0.1",
+    "@hashgraph/sdk": "^2.56.0",
+    "@hisn/shared": "*",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.4",
+    "fastify": "^5.1.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/ws": "^8.5.13",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  }
+}

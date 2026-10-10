@@ -1,0 +1,42 @@
+#pragma once
+#if __has_include("../secrets.h")
+#include "../secrets.h"
+#endif
+#define uECC_SUPPORTS_secp256k1 1
+#define uECC_SUPPORTS_secp160r1 0
+#define uECC_SUPPORTS_secp192r1 0
+#define uECC_SUPPORTS_secp224r1 0
+#define uECC_SUPPORTS_secp256r1 0
+#define uECC_compress hisn_uECC_compress
+#define uECC_compute_public_key hisn_uECC_compute_public_key
+#define uECC_curve_b hisn_uECC_curve_b
+#define uECC_curve_n hisn_uECC_curve_n
+#define uECC_curve_num_bits hisn_uECC_curve_num_bits
+#define uECC_curve_num_bytes hisn_uECC_curve_num_bytes
+#define uECC_curve_num_n_bits hisn_uECC_curve_num_n_bits
+#define uECC_curve_num_n_bytes hisn_uECC_curve_num_n_bytes
+#define uECC_curve_num_n_words hisn_uECC_curve_num_n_words
+#define uECC_curve_num_words hisn_uECC_curve_num_words
+#define uECC_curve_p hisn_uECC_curve_p
+#define uECC_curve_private_key_size hisn_uECC_curve_private_key_size
+#define uECC_curve_public_key_size hisn_uECC_curve_public_key_size
+#define uECC_decompress hisn_uECC_decompress
+#define uECC_generate_random_int hisn_uECC_generate_random_int
+#define uECC_get_rng hisn_uECC_get_rng
+#define uECC_make_key hisn_uECC_make_key
+#define uECC_point_mult hisn_uECC_point_mult
+#define uECC_secp160r1 hisn_uECC_secp160r1
+#define uECC_secp192r1 hisn_uECC_secp192r1
+#define uECC_secp224r1 hisn_uECC_secp224r1
+#define uECC_secp256k1 hisn_uECC_secp256k1
+#define uECC_secp256r1 hisn_uECC_secp256r1
+#define uECC_set_rng hisn_uECC_set_rng
+#define uECC_shared_secret hisn_uECC_shared_secret
+#define uECC_sign hisn_uECC_sign
+#define uECC_sign_deterministic hisn_uECC_sign_deterministic
+#define uECC_sign_with_k hisn_uECC_sign_with_k
+#define uECC_valid_point hisn_uECC_valid_point
+#define uECC_valid_public_key hisn_uECC_valid_public_key
+#define uECC_verify hisn_uECC_verify
+#define HISN_LIGHT 1
+#define HISN_ROLE "light"

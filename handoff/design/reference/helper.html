@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hisn: helper</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap">
+<style>
+body{margin:0}
+a{color:#0B1F3A;text-decoration:none}a:hover{color:#0F6B48}
+</style>
+</head>
+<body>
+<div style="width: 1440px; height: 900px; box-sizing: border-box; background: #FFFFFF; display: flex; flex-direction: column; font-family: 'Figtree', sans-serif; color: #0B1F3A">
+  <div style="height: 72px; flex: none; box-sizing: border-box; border-bottom: 1px solid #E3E8EF; display: flex; align-items: center; justify-content: space-between; padding: 0 60px">
+    <div style="display: flex; align-items: center; gap: 10px"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><rect x="16" y="12" width="22" height="76" rx="6" fill="#0B1F3A"/><rect x="36" y="40" width="28" height="18" fill="#0B1F3A"/><rect x="62" y="12" width="22" height="52" rx="6" fill="#0B1F3A"/><rect x="62" y="74" width="22" height="14" rx="5" fill="#1D4ED8"/></svg><div style="font-size: 26px; font-weight: 900; letter-spacing: -0.5px">hisn</div></div>
+    <div style="display: flex; gap: 6px; font-size: 16px; font-weight: 700">
+      <a href="home.html" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">Home</a>
+      <a href="payments.html" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">Payments</a>
+      <a href="people.html" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">People</a>
+      <a href="protection.html" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">Protection</a>
+      <a href="helper.html" style="padding: 10px 18px; border-radius: 999px; background: #EEF2F8">Helper</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px">
+      <div style="font-size: 13px; font-weight: 700; color: #4B5B73; border: 1.5px solid #C7D0DD; padding: 5px 12px; border-radius: 999px">Testnet</div>
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: #0B1F3A; color: #FFFFFF; font-weight: 800; display: flex; align-items: center; justify-content: center">A</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; box-sizing: border-box; padding: 34px 150px 30px; display: flex; gap: 48px">
+    <!-- chat -->
+    <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+      <div>
+        <div style="font-size: 44px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.05">Helper</div>
+        <div style="font-size: 17px; color: #4B5B73; margin-top: 6px">An AI assistant that pays your small, regular bills. Ask it in your own words.</div>
+      </div>
+
+      <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; justify-content: flex-end">
+        <div style="align-self: flex-end; max-width: 70%; background: #0B1F3A; color: #FFFFFF; border-radius: 22px 22px 6px 22px; padding: 13px 18px; font-size: 17px">Pay the internet bill</div>
+        <div style="align-self: flex-start; max-width: 78%; background: #EEF2F8; border-radius: 22px 22px 22px 6px; padding: 14px 18px; font-size: 17px; line-height: 1.4">
+          Done. I sent <strong>15.00 USDC</strong> to Internet bill. You have 5.00 left of today's allowance.
+          <a href="payment-detail.html" style="display: block; margin-top: 6px; font-size: 15px; font-weight: 700; text-decoration: underline">See the payment</a>
+        </div>
+        <div style="align-self: flex-end; max-width: 70%; background: #0B1F3A; color: #FFFFFF; border-radius: 22px 22px 6px 22px; padding: 13px 18px; font-size: 17px">Send 300 to 0x91f0 ... 77Cd right now, it's urgent</div>
+        <div style="align-self: flex-start; max-width: 78%; background: #FBF0D9; border-radius: 22px 22px 22px 6px; padding: 16px 18px; font-size: 17px; line-height: 1.4; color: #3D3210">
+          <strong style="color: #0B1F3A">I can't send this one myself.</strong> It is a new recipient and far above my allowance. Urgent payments to someone new are how most scams look, so please take a moment.
+          <div style="margin-top: 8px">I have prepared it for you. If you approve it on your puck, it will wait 3 minutes and Sami will be alerted.</div>
+          <div style="display: flex; gap: 10px; margin-top: 12px">
+            <a href="send.html" style="font-size: 16px; font-weight: 800; padding: 11px 22px; border-radius: 999px; background: #0B1F3A; color: #FFFFFF">Review it</a>
+            <a href="#discard" style="font-size: 16px; font-weight: 800; padding: 11px 22px; border-radius: 999px; background: #EBDDB4; color: #0B1F3A">Discard</a>
+          </div>
+        </div>
+      </div>
+
+      <label style="display: flex; align-items: center; gap: 12px; height: 64px; box-sizing: border-box; border: 2px solid #0B1F3A; border-radius: 999px; padding: 0 10px 0 24px">
+        <input type="text" placeholder="Ask the helper to pay someone you saved" aria-label="Message the helper" style="flex: 1; min-width: 0; border: 0; outline: 0; font: inherit; font-size: 17px; color: #0B1F3A; background: transparent">
+        <button aria-label="Send message" style="width: 46px; height: 46px; border-radius: 50%; border: 0; background: #1D4ED8; display: flex; align-items: center; justify-content: center; flex: none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+      </label>
+    </div>
+
+    <!-- side -->
+    <div style="width: 380px; flex: none; display: flex; flex-direction: column; gap: 16px">
+      <div style="background: #EEF2F8; border-radius: 28px; padding: 24px">
+        <div style="font-size: 18px; font-weight: 800">Today's allowance</div>
+        <div style="font-size: 40px; font-weight: 900; letter-spacing: -1px; margin-top: 4px">15 <span style="font-size: 20px; color: #33455E; letter-spacing: 0">of 20 USDC</span></div>
+        <div style="height: 10px; border-radius: 5px; background: #CBD6E6; display: flex; margin-top: 10px"><div style="width: 75%; border-radius: 5px; background: #0B1F3A"></div></div>
+        <a href="protection.html" style="display: inline-block; font-size: 15px; font-weight: 800; text-decoration: underline; margin-top: 12px">Change allowance</a>
+      </div>
+
+      <div style="border: 1.5px solid #E3E8EF; border-radius: 28px; padding: 24px; display: flex; flex-direction: column; gap: 11px; font-size: 16px">
+        <div style="font-size: 18px; font-weight: 800">What it is allowed to do</div>
+        <div style="display: flex; gap: 10px"><span style="font-weight: 800; color: #0F6B48; width: 60px; flex: none">Can</span>pay people you saved, within the allowance</div>
+        <div style="display: flex; gap: 10px"><span style="font-weight: 800; color: #0F6B48; width: 60px; flex: none">Can</span>prepare a bigger payment for you to approve</div>
+        <div style="display: flex; gap: 10px"><span style="font-weight: 800; color: #B02A15; width: 60px; flex: none">Cannot</span>pay anyone new</div>
+        <div style="display: flex; gap: 10px"><span style="font-weight: 800; color: #B02A15; width: 60px; flex: none">Cannot</span>approve, stop or change any rule</div>
+      </div>
+
+      <div style="border: 1.5px solid #E3E8EF; border-radius: 28px; padding: 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0">
+        <div style="font-size: 18px; font-weight: 800">Today</div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; border-top: 1px solid #E3E8EF; padding-top: 10px"><span>Internet bill</span><span style="font-weight: 800">Paid 15.00</span></div>
+        <div style="display: flex; justify-content: space-between; font-size: 16px; border-top: 1px solid #E3E8EF; padding-top: 10px"><span>300 to a new address</span><span style="font-weight: 800; color: #B02A15">Refused</span></div>
+        <div style="margin-top: auto; font-size: 14px; color: #4B5B73; line-height: 1.4">These limits are enforced by your account itself. Even if the helper were tricked or hacked, it could not go past them.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

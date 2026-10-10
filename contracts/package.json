@@ -1,0 +1,37 @@
+{
+  "name": "@hisn/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "abi": "hardhat run scripts/export-abi.ts",
+    "day1": "tsx scripts/day1/run.ts",
+    "deploy:testnet": "tsx scripts/deploy.ts",
+    "smoke": "tsx scripts/smoke.ts",
+    "demo:reset": "tsx scripts/reset.ts",
+    "security": "tsx scripts/security-check.ts",
+    "proof:server-off": "tsx scripts/proof-server-off.ts",
+    "recovery-test": "tsx scripts/recovery-test.ts",
+    "redeploy:devices": "tsx scripts/redeploy-devices.ts",
+    "hedera-numbers": "tsx scripts/hedera-numbers.ts"
+  },
+  "dependencies": {
+    "@hisn/shared": "*",
+    "@openzeppelin/contracts": "^5.1.0",
+    "ethers": "^6.13.4",
+    "dotenv": "^16.4.5",
+    "@hashgraph/sdk": "^2.56.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.17",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "@types/node": "^22.10.0",
+    "@types/mocha": "^10.0.10",
+    "@types/chai": "^4.3.20",
+    "chai": "^4.5.0"
+  }
+}

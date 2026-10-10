@@ -1,0 +1,59 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Dashboard
+        run: npm -w dashboard run build
+        env:
+          HISN_BASE: /${{ github.event.repository.name }}/
+      - name: Guardian page
+        run: npm -w guardian run build
+        env:
+          HISN_BASE: /${{ github.event.repository.name }}/guardian/
+          VITE_VAULT_ADDRESS: "0xc066F10988733ea7875817cDC8d4bF098615A061"
+          VITE_OWNER_NAME: Amel
+          VITE_CONNECT_ORIGINS: "https://*.trycloudflare.com wss://*.trycloudflare.com"
+      - name: Assemble
+        run: |
+          mkdir -p site
+          cp -r dashboard/dist/. site/
+          cp site/index.html site/404.html
+          mkdir -p site/guardian
+          cp -r guardian/dist/. site/guardian/
+          touch site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

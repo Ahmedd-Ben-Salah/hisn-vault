@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hisn home B: friendly bank</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap">
+<style>
+body{margin:0}
+a{color:#0B1F3A;text-decoration:none}a:hover{color:#0F6B48}
+</style>
+</head>
+<body>
+<div style="width: 1440px; height: 900px; box-sizing: border-box; background: #FFFFFF; display: flex; flex-direction: column; font-family: 'Figtree', sans-serif; color: #0B1F3A">
+
+  <!-- top bar -->
+  <div style="height: 72px; flex: none; box-sizing: border-box; border-bottom: 1px solid #E3E8EF; display: flex; align-items: center; justify-content: space-between; padding: 0 60px">
+    <div style="display: flex; align-items: center; gap: 10px"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><rect x="16" y="12" width="22" height="76" rx="6" fill="#0B1F3A"/><rect x="36" y="40" width="28" height="18" fill="#0B1F3A"/><rect x="62" y="12" width="22" height="52" rx="6" fill="#0B1F3A"/><rect x="62" y="74" width="22" height="14" rx="5" fill="#1D4ED8"/></svg><div style="font-size: 26px; font-weight: 900; letter-spacing: -0.5px">hisn</div></div>
+    <div style="display: flex; gap: 6px; font-size: 16px; font-weight: 700">
+      <a href="#home" style="padding: 10px 18px; border-radius: 999px; background: #EEF2F8">Home</a>
+      <a href="#payments" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">Payments</a>
+      <a href="#people" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">People</a>
+      <a href="#protection" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">Protection</a>
+      <a href="helper.html" style="padding: 10px 18px; border-radius: 999px; color: #4B5B73">Helper</a>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px">
+      <div style="font-size: 13px; font-weight: 700; color: #4B5B73; border: 1.5px solid #C7D0DD; padding: 5px 12px; border-radius: 999px">Testnet</div>
+      <div style="width: 40px; height: 40px; border-radius: 50%; background: #0B1F3A; color: #FFFFFF; font-weight: 800; display: flex; align-items: center; justify-content: center">A</div>
+    </div>
+  </div>
+
+  <div style="flex: 1; min-height: 0; box-sizing: border-box; padding: 34px 150px 30px; display: flex; flex-direction: column; gap: 26px">
+
+    <!-- balance row -->
+    <div style="display: flex; align-items: flex-end; justify-content: space-between">
+      <div>
+        <div style="font-size: 16px; font-weight: 600; color: #4B5B73">Total protected</div>
+        <div style="font-size: 68px; font-weight: 900; letter-spacing: -2.5px; line-height: 1.05">150.00 <span style="font-size: 30px; letter-spacing: 0">USDC</span></div>
+        <div style="font-size: 16px; font-weight: 600; color: #4B5B73; margin-top: 2px">plus 40.00 HBAR</div>
+      </div>
+      <div style="display: flex; gap: 10px">
+        <button style="font: inherit; font-size: 17px; font-weight: 800; height: 54px; padding: 0 30px; border-radius: 999px; border: 0; background: #1D4ED8; color: #FFFFFF">Send</button>
+        <button style="font: inherit; font-size: 17px; font-weight: 800; height: 54px; padding: 0 26px; border-radius: 999px; border: 0; background: #EEF2F8; color: #0B1F3A">Add money</button>
+        <button style="font: inherit; font-size: 17px; font-weight: 800; height: 54px; padding: 0 26px; border-radius: 999px; border: 0; background: #EEF2F8; color: #0B1F3A">Freeze</button>
+      </div>
+    </div>
+
+    <!-- waiting -->
+    <div style="background: #FBF0D9; border-radius: 28px; padding: 24px 30px; display: flex; align-items: center; gap: 22px">
+      <div style="width: 60px; height: 60px; border-radius: 50%; background: #0B1F3A; display: flex; align-items: center; justify-content: center; flex: none"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FBF0D9" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+      <div style="flex: 1; min-width: 0">
+        <div style="font-size: 24px; font-weight: 800; letter-spacing: -0.3px">100.00 USDC to a new recipient is waiting</div>
+        <div style="font-size: 16px; font-weight: 500; margin-top: 3px; color: #3D3210">Leaves at <strong>16:42</strong> · 0x5aAe ... 1BeAed · Sami was notified at 16:39</div>
+        <div style="height: 8px; border-radius: 4px; background: #EBDDB4; display: flex; margin-top: 14px; max-width: 520px"><div style="width: 40%; border-radius: 4px; background: #0B1F3A"></div></div>
+      </div>
+      <div style="display: flex; gap: 10px; flex: none">
+        <button style="font: inherit; font-size: 17px; font-weight: 800; height: 54px; padding: 0 28px; border-radius: 999px; border: 0; background: #B42318; color: #FFFFFF">Stop payment</button>
+        <button style="font: inherit; font-size: 17px; font-weight: 800; height: 54px; padding: 0 24px; border-radius: 999px; border: 2px solid #0B1F3A; background: transparent; color: #0B1F3A">Details</button>
+      </div>
+    </div>
+
+    <!-- two columns -->
+    <div style="flex: 1; min-height: 0; display: flex; gap: 40px">
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px"><div style="font-size: 22px; font-weight: 800">Recent payments</div><a href="#payments" style="font-size: 15px; font-weight: 700; text-decoration: underline">See all</a></div>
+        
+          <div style="display: flex; align-items: center; gap: 16px; padding: 13px 0; border-top: 1px solid #E3E8EF">
+            <div style="width: 46px; height: 46px; border-radius: 50%; background: #EEF2F8; color: #0B1F3A; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">I</div>
+            <div style="flex: 1; min-width: 0"><div style="font-size: 17px; font-weight: 700">Internet bill</div><div style="font-size: 14px; color: #4B5B73">Today, 11:02 · paid by your helper</div></div>
+            <div style="text-align: right"><div style="font-size: 17px; font-weight: 800">-15.00 USDC</div><div style="font-size: 14px; font-weight: 600; color: #4B5B73">Paid</div></div>
+          </div>
+        
+          <div style="display: flex; align-items: center; gap: 16px; padding: 13px 0; border-top: 1px solid #E3E8EF">
+            <div style="width: 46px; height: 46px; border-radius: 50%; background: #EEF2F8; color: #0B1F3A; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">S</div>
+            <div style="flex: 1; min-width: 0"><div style="font-size: 17px; font-weight: 700">Sami</div><div style="font-size: 14px; color: #4B5B73">Yesterday, 18:20</div></div>
+            <div style="text-align: right"><div style="font-size: 17px; font-weight: 800">-20.00 USDC</div><div style="font-size: 14px; font-weight: 600; color: #4B5B73">Paid</div></div>
+          </div>
+        
+          <div style="display: flex; align-items: center; gap: 16px; padding: 13px 0; border-top: 1px solid #E3E8EF">
+            <div style="width: 46px; height: 46px; border-radius: 50%; background: #FBE4DF; color: #B02A15; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">N</div>
+            <div style="flex: 1; min-width: 0"><div style="font-size: 17px; font-weight: 700">New recipient</div><div style="font-size: 14px; color: #4B5B73">2 Oct, 09:14 · 0x91f0 ... 77Cd</div></div>
+            <div style="text-align: right"><div style="font-size: 17px; font-weight: 800">400.00 USDC</div><div style="font-size: 14px; font-weight: 600; color: #B02A15">Stopped by Sami</div></div>
+          </div>
+        
+          <div style="display: flex; align-items: center; gap: 16px; padding: 13px 0; border-top: 1px solid #E3E8EF">
+            <div style="width: 46px; height: 46px; border-radius: 50%; background: #EEF2F8; color: #0B1F3A; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">P</div>
+            <div style="flex: 1; min-width: 0"><div style="font-size: 17px; font-weight: 700">Pharmacy</div><div style="font-size: 14px; color: #4B5B73">30 Sep, 16:45</div></div>
+            <div style="text-align: right"><div style="font-size: 17px; font-weight: 800">-32.50 USDC</div><div style="font-size: 14px; font-weight: 600; color: #4B5B73">Paid</div></div>
+          </div>
+        
+          <div style="display: flex; align-items: center; gap: 16px; padding: 13px 0; border-top: 1px solid #E3E8EF">
+            <div style="width: 46px; height: 46px; border-radius: 50%; background: #DDF1E7; color: #0F4A33; font-size: 18px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none">T</div>
+            <div style="flex: 1; min-width: 0"><div style="font-size: 17px; font-weight: 700">Top-up</div><div style="font-size: 14px; color: #4B5B73">28 Sep, 10:03</div></div>
+            <div style="text-align: right"><div style="font-size: 17px; font-weight: 800">+200.00 USDC</div><div style="font-size: 14px; font-weight: 600; color: #0F6B48">Received</div></div>
+          </div>
+        
+      </div>
+
+      <div style="width: 380px; flex: none; display: flex; flex-direction: column; gap: 16px">
+        <div style="background: #EEF2F8; border-radius: 28px; padding: 22px 24px; display: flex; align-items: center; gap: 14px">
+          <div style="width: 54px; height: 54px; border-radius: 50%; background: #0B1F3A; color: #FFFFFF; font-size: 22px; font-weight: 900; display: flex; align-items: center; justify-content: center; flex: none">S</div>
+          <div><div style="font-size: 18px; font-weight: 800">Sami is your guardian</div><div style="font-size: 14px; color: #33455E">He can stop a payment. He can never move your money.</div></div>
+        </div>
+        <div style="border: 1.5px solid #E3E8EF; border-radius: 28px; padding: 22px 24px; flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline"><div style="font-size: 18px; font-weight: 800">How your money leaves</div><a href="#protection" style="font-size: 14px; font-weight: 700; text-decoration: underline">Edit</a></div>
+          <div style="display: flex; gap: 14px; align-items: center"><div style="width: 12px; height: 12px; border-radius: 50%; background: #1D4ED8; border: 2px solid #0B1F3A; box-sizing: border-box; flex: none"></div><div><div style="font-size: 16px; font-weight: 700">Right away</div><div style="font-size: 14px; color: #4B5B73">Up to 50 to people you saved</div></div></div>
+          <div style="display: flex; gap: 14px; align-items: center"><div style="width: 12px; height: 12px; border-radius: 50%; background: #FFC93C; border: 2px solid #0B1F3A; box-sizing: border-box; flex: none"></div><div><div style="font-size: 16px; font-weight: 700">After 3 minutes</div><div style="font-size: 14px; color: #4B5B73">Up to 500, or anyone new</div></div></div>
+          <div style="display: flex; gap: 14px; align-items: center"><div style="width: 12px; height: 12px; border-radius: 50%; background: #B42318; border: 2px solid #0B1F3A; box-sizing: border-box; flex: none"></div><div><div style="font-size: 16px; font-weight: 700">Only if Sami approves</div><div style="font-size: 14px; color: #4B5B73">Anything above 500</div></div></div>
+          <div style="margin-top: auto; font-size: 13px; color: #4B5B73">Puck, guardian light and Sami's phone are connected.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

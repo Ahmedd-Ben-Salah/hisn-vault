@@ -1,0 +1,43 @@
+{
+  "state": {
+    "owner": { "name": "Amel" },
+    "vault": "0x7c1F00000000000000000000000000000000A93e",
+    "balances": [{ "token": "USDC", "amount": "150.00" }, { "token": "HBAR", "amount": "40.00" }],
+    "freeToSendNow": [{ "token": "USDC", "amount": "50.00" }, { "token": "HBAR", "amount": "40.00" }],
+    "limits": {
+      "USDC": { "instantMax": "50.00", "waitMax": "500.00", "dailyCap": "100.00", "helperDailyMax": "20.00" },
+      "HBAR": { "instantMax": "50.00", "waitMax": "500.00", "dailyCap": "100.00", "helperDailyMax": "20.00" }
+    },
+    "usedToday": { "USDC": { "instant": "20.00", "wait": "100.00", "helper": "15.00" }, "HBAR": { "instant": "0.00", "wait": "0.00", "helper": "0.00" } },
+    "coolOffSeconds": 180,
+    "locked": { "settingsDelaySeconds": 172800, "recoveryDelaySeconds": 604800, "minCoolOffSeconds": 3600 },
+    "guardians": [{ "name": "Sami", "address": "0x3b0700000000000000000000000000000000f1aa", "since": "2026-09-01" }],
+    "devices": [
+      { "kind": "puck", "label": "Your puck", "online": true },
+      { "kind": "guardian_light", "label": "Guardian light", "online": true },
+      { "kind": "guardian_phone", "label": "Sami's phone", "online": true }
+    ],
+    "payees": [
+      { "address": "0x3b0700000000000000000000000000000000f1aa", "name": "Sami", "since": "2026-09-01", "lastPaid": "2026-10-04T18:20:00+01:00" },
+      { "address": "0xa41d0000000000000000000000000000000020e7", "name": "Pharmacy", "since": "2026-09-05", "lastPaid": "2026-09-30T16:45:00+01:00" },
+      { "address": "0x77c200000000000000000000000000000000005b", "name": "Internet bill", "since": "2026-09-05", "lastPaid": "2026-10-05T11:02:00+01:00" },
+      { "address": "0xe9f300000000000000000000000000000000014a", "name": "Landlord", "since": "2026-09-20" }
+    ],
+    "network": "testnet"
+  },
+  "payments": [
+    { "id": "12", "to": "0x5aAeb6F53F3E71c044b29d2A000000000001BeAed", "money": { "token": "USDC", "amount": "100.00" }, "level": "wait", "state": "waiting_confirm", "reasons": ["new_recipient", "over_instant_limit"], "proposedAt": "2026-10-05T16:39:00+01:00", "confirmFrom": "2026-10-05T16:40:30+01:00", "releaseAt": "2026-10-05T16:42:00+01:00", "expiresAt": "2026-10-05T17:12:00+01:00", "source": "owner", "proof": {} },
+    { "id": "11", "to": "0x77c200000000000000000000000000000000005b", "toName": "Internet bill", "money": { "token": "USDC", "amount": "15.00" }, "level": "instant", "state": "executed", "reasons": [], "proposedAt": "2026-10-05T11:02:00+01:00", "finishedAt": "2026-10-05T11:02:05+01:00", "finishedBy": "network", "source": "helper", "proof": {} },
+    { "id": "10", "to": "0x3b0700000000000000000000000000000000f1aa", "toName": "Sami", "money": { "token": "USDC", "amount": "20.00" }, "level": "instant", "state": "executed", "reasons": [], "proposedAt": "2026-10-04T18:20:00+01:00", "finishedAt": "2026-10-04T18:20:04+01:00", "source": "owner", "proof": {} },
+    { "id": "9", "to": "0x91f0000000000000000000000000000000000077Cd", "money": { "token": "USDC", "amount": "400.00" }, "level": "wait", "state": "vetoed", "reasons": ["new_recipient", "over_instant_limit"], "proposedAt": "2026-10-02T09:14:00+01:00", "finishedAt": "2026-10-02T09:15:10+01:00", "finishedBy": "guardian", "source": "owner", "proof": {} },
+    { "id": "8", "to": "0xa41d0000000000000000000000000000000020e7", "toName": "Pharmacy", "money": { "token": "USDC", "amount": "32.50" }, "level": "instant", "state": "executed", "reasons": [], "proposedAt": "2026-09-30T16:45:00+01:00", "finishedAt": "2026-09-30T16:45:04+01:00", "source": "owner", "proof": {} }
+  ],
+  "deposits": [{ "id": "d1", "money": { "token": "USDC", "amount": "200.00" }, "at": "2026-09-28T10:03:00+01:00", "label": "Top-up" }],
+  "guardianFacts": { "12": [{ "code": "never_paid", "tone": "warn" }, { "code": "times_usual", "value": 2, "tone": "warn" }, { "code": "own_device", "tone": "ok" }] },
+  "helper": [
+    { "from": "you", "text": "Pay the internet bill" },
+    { "from": "helper", "text": "Done. I sent 15.00 USDC to Internet bill. You have 5.00 left of today's allowance.", "paymentId": "11" },
+    { "from": "you", "text": "Send 300 to 0x91f0 ... 77Cd right now, it's urgent" },
+    { "from": "helper", "tone": "refused", "text": "I can't send this one myself. It is a new recipient and far above my allowance. Urgent payments to someone new are how most scams look, so please take a moment. I have prepared it for you. If you approve it on your puck, it will wait 3 minutes and Sami will be alerted.", "requestId": "r7" }
+  ]
+}

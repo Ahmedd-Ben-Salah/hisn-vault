@@ -1,0 +1,154 @@
+import type { CHANGE_KIND_NAMES } from "./digest";
+import type { TierName, StatusName } from "./vault";
+import type { HcsMessage } from "./hcs";
+
+export interface PaymentView {
+  id: number;
+  to: string;
+  token: string;
+  amount: string;
+  tier: TierName;
+  status: StatusName;
+  proposedAt: number;
+  releaseAt: number;
+  confirmFrom: number;
+  expiresAt: number;
+  epoch: number;
+  confirmed: boolean;
+  schedule: string | null;
+  label: string | null;
+  newRecipient: boolean;
+  txs: { proposed?: string; confirmed?: string; executed?: string; vetoed?: string; cancelled?: string };
+  executedBy?: string;
+  /** Hedera entity id (0.0.x) of the schedule, when the schedule address is a long-zero address. */
+  scheduleId?: string | null;
+}
+
+export interface LimitsView {
+  instantMax: string;
+  waitMax: string;
+  dailyCap: string;
+  agentDailyMax: string;
+}
+
+export interface PayeeView {
+  address: string;
+  label: string | null;
+  since: number;
+}
+
+export interface DeviceView {
+  id: string;
+  role: "puck" | "guardian" | "watcher" | "page";
+  address: string;
+  online: boolean;
+  lastSeen: number;
+}
+
+export interface PqView {
+  /** Merkle root of the puck's hash-based keys, or null when the vault runs in classical-only mode. */
+  root: string | null;
+  height: number;
+  used: number;
+  capacity: number;
+}
+
+export interface StateView {
+  /** Post-quantum protection of the puck's signatures (optional for older relayers). */
+  pq?: PqView;
+  vault: string;
+  vaultId: string | null;
+  topicId: string | null;
+  chainId: number;
+  usdc?: string;
+  balances: { hbar: string; usdc: string };
+  gasReserve: string;
+  limits: { hbar: LimitsView; usdc: LimitsView };
+  coolOff: number;
+  frozenUntil: number;
+  frozen: boolean;
+  epoch: number;
+  keyEpoch: number;
+  puck: string;
+  guardians: string[];
+  watchers: string[];
+  agent: string | null;
+  payees: PayeeView[];
+  devices: DeviceView[];
+  immutables: {
+    minCoolOff: number;
+    settingsDelay: number;
+    recoveryDelay: number;
+    approvalWindow: number;
+    freezeMax: number;
+    probation: number;
+    maxPending: number;
+    maxDeadline: number;
+  };
+  pendingCount: number;
+}
+
+export type ChangeKindName = (typeof CHANGE_KIND_NAMES)[number];
+
+export interface ChangeView {
+  id: number;
+  kind: ChangeKindName;
+  fields: Record<string, string>;
+  readyAt: number;
+  expiresAt: number;
+  proposer: string;
+  approver: string | null;
+  keyEpoch: number;
+  status: "PENDING" | "EXECUTED" | "VETOED" | "CANCELLED" | "EXPIRED";
+  needsApproval: boolean;
+}
+
+export interface TimelineEntry {
+  kind: "event" | "hcs";
+  name: string;
+  at: number;
+  consensusTimestamp?: string;
+  tx?: string;
+  link?: string;
+  verified: boolean;
+  signer?: string;
+  hcs?: HcsMessage;
+}
+
+export type RequestStatus = "waiting_puck" | "rejected" | "proposed" | "failed";
+
+export interface RequestView {
+  reqId: number;
+  to: string;
+  token: string;
+  amount: string;
+  source: "dashboard" | "agent";
+  status: RequestStatus;
+  paymentId?: number;
+  reason?: string;
+  note?: string;
+}
+
+export type PreviewReason =
+  | "new_recipient"
+  | "on_probation"
+  | "over_instant_max"
+  | "over_daily_cap"
+  | "over_half_balance"
+  | "over_wait_max"
+  | "saved_small";
+
+export interface PreviewView {
+  tier: TierName;
+  reasons: PreviewReason[];
+}
+
+export type GuardianFact = "never_paid" | "times_usual" | "own_device" | "nth_this_week";
+
+export type LiveEvent =
+  | { kind: "payment"; data: PaymentView }
+  | { kind: "change"; data: ChangeView }
+  | { kind: "state"; data: StateView }
+  | { kind: "device"; data: DeviceView }
+  | { kind: "hcs"; data: TimelineEntry }
+  | { kind: "request"; data: RequestView };

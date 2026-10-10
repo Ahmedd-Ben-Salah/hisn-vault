@@ -1,0 +1,32 @@
+{
+  "network": "testnet",
+  "vault": "0xc066F10988733ea7875817cDC8d4bF098615A061",
+  "vaultId": "0.0.10963657",
+  "topicId": "0.0.10963660",
+  "puck": "0xaFdd81Af78d993D595f3524df9cc9FE0D6725c84",
+  "guardians": [
+    "0x946c7b308D0F46e2A24e9b58005362C014Bd1913",
+    "0xe10A046d818bE79B9Dd4c3fD9F06d6Cc57Fe4D09"
+  ],
+  "watchers": [
+    "0xccEa46CefF0DA8D7e52DE267cf95Ae930082fcFE"
+  ],
+  "agent": "0xCb45c9bA2950101058122979631840b9Be56EAE3",
+  "payees": [
+    "0xF4C9E925D3029D59E05a4AA315AbF82B9642831f"
+  ],
+  "coolOff": 60,
+  "immutables": {
+    "minCoolOff": 60,
+    "settingsDelay": 300,
+    "recoveryDelay": 600,
+    "approvalWindow": 1800,
+    "freezeMax": 600,
+    "probation": 0,
+    "gasReserve": "1000000000",
+    "execGas": "1000000"
+  },
+  "deployTx": "0xed05be2081183c3f6ae1cc6ad6bfcaf68781fd466ace58a8050e9b44bf15c116",
+  "associateTx": "0xf4e79c7463240e03f174bb4fd6cd3ccd85e552c9f2b6d66a3f015924704e4985",
+  "deployedAt": "2026-10-10T01:59:13.738Z"
+}

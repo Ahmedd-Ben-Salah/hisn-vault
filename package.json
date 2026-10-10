@@ -1,0 +1,24 @@
+{
+  "name": "hisn",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "shared",
+    "contracts",
+    "backend",
+    "dashboard",
+    "guardian",
+    "verify"
+  ],
+  "scripts": {
+    "test": "npm -w shared test && npm -w contracts test && npm -w backend test",
+    "vectors": "npm -w shared run vectors",
+    "demo:reset": "npm -w contracts run demo:reset",
+    "local": "npm -w backend run local:chain",
+    "relayer": "npm -w backend start",
+    "relayer:local": "npm -w backend run start:local",
+    "sim:local": "npm -w backend run sim:local",
+    "redeploy:devices": "npm -w contracts run redeploy:devices --",
+    "demo:check": "npm -w backend run demo:check"
+  }
+}

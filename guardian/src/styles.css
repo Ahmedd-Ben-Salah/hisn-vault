@@ -1,0 +1,121 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* Design tokens (handoff/design/tokens.css) mapped onto the names the components use. */
+@theme inline {
+  --font-display: var(--font);
+  --font-sans: var(--font);
+
+  --color-plaster: var(--soft);
+  --color-paper: var(--bg);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-soft: var(--muted);
+  --color-line: var(--line);
+  --color-border: var(--border);
+  --color-soft: var(--soft);
+  --color-door: var(--accent);
+  --color-door-deep: var(--ink);
+  --color-door-wash: var(--soft);
+
+  --color-safe: var(--ok-fg);
+  --color-safe-wash: var(--ok-bg);
+  --color-online: var(--online);
+  --color-hold: var(--wait-fg);
+  --color-hold-text: var(--wait-text);
+  --color-hold-fill: var(--wait-fg);
+  --color-hold-track: var(--wait-track);
+  --color-hold-wash: var(--wait-bg);
+  --color-stop: var(--stop);
+  --color-stop-fg: var(--stop-fg);
+  --color-stop-text: var(--stop-text);
+  --color-stop-wash: var(--stop-bg);
+  --color-ice: var(--ink-2);
+  --color-ice-wash: var(--soft);
+
+  --radius-card: var(--r-card);
+  --radius-panel: var(--r-panel);
+  --radius-input: var(--r-input);
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-door);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  button:not(:disabled),
+  [role="button"] {
+    cursor: pointer;
+  }
+}
+
+@utility font-wide {
+  font-family: var(--font-display);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+@utility font-narrow {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+@utility tabular {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes gate-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes arrive {
+  from {
+    transform: translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.gate-pulse {
+  animation: gate-pulse 1.6s ease-in-out infinite;
+}
+
+.arrive {
+  animation: arrive 260ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gate-pulse,
+  .arrive {
+    animation: none;
+  }
+
+  * {
+    transition-duration: 0s !important;
+  }
+}

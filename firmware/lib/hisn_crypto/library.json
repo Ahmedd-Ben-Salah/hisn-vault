@@ -1,0 +1,6 @@
+{
+  "name": "hisn_crypto",
+  "version": "0.1.0",
+  "dependencies": [{ "owner": "kmackay", "name": "micro-ecc", "version": "^1.0.0" }],
+  "build": { "flags": "-DuECC_SUPPORTS_secp256k1=1" }
+}

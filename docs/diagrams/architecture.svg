@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" width="1280" height="800" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker>
+    <marker id="ar" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#B4472E"/></marker>
+    <marker id="ag" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#2F7D57"/></marker>
+    <marker id="as" markerWidth="10" markerHeight="8" refX="1" refY="4" orient="auto"><path d="M10,0 L0,4 L10,8 z" fill="#333"/></marker>
+  </defs>
+  <rect width="1280" height="800" fill="#FFFFFF"/>
+  <text x="40" y="42" font-size="24" font-weight="700" fill="#1A1A1A">HISN Guardian: how the parts fit together</text>
+
+  <!-- Owner side -->
+  <rect x="40" y="70" width="300" height="300" rx="12" fill="#EEF4FF" stroke="#4A6FA5" stroke-width="1.5"/>
+  <text x="56" y="94" font-size="14" font-weight="700" fill="#2F4F7F">OWNER SIDE</text>
+  <rect x="70" y="108" width="240" height="68" rx="8" fill="#FFFFFF" stroke="#4A6FA5" stroke-width="1.5"/>
+  <text x="190" y="136" font-size="16" font-weight="700" text-anchor="middle" fill="#1A1A1A">PUCK</text>
+  <text x="190" y="158" font-size="13" text-anchor="middle" fill="#333">ESP32 + screen + PIN, signs payments</text>
+  <rect x="70" y="194" width="240" height="68" rx="8" fill="#FFFFFF" stroke="#4A6FA5" stroke-width="1.5"/>
+  <text x="190" y="222" font-size="16" font-weight="700" text-anchor="middle" fill="#1A1A1A">Dashboard</text>
+  <text x="190" y="244" font-size="13" text-anchor="middle" fill="#333">web app, display only</text>
+  <rect x="70" y="280" width="240" height="68" rx="8" fill="#FFFFFF" stroke="#4A6FA5" stroke-width="1.5"/>
+  <text x="190" y="308" font-size="16" font-weight="700" text-anchor="middle" fill="#1A1A1A">AI agent</text>
+  <text x="190" y="330" font-size="13" text-anchor="middle" fill="#333">small payments to saved payees only</text>
+
+  <!-- Guardian side -->
+  <rect x="40" y="420" width="300" height="230" rx="12" fill="#FFF1EC" stroke="#B4472E" stroke-width="1.5"/>
+  <text x="56" y="444" font-size="14" font-weight="700" fill="#8A3520">GUARDIAN SIDE (the trusted person)</text>
+  <rect x="70" y="458" width="240" height="68" rx="8" fill="#FFFFFF" stroke="#B4472E" stroke-width="1.5"/>
+  <text x="190" y="486" font-size="16" font-weight="700" text-anchor="middle" fill="#1A1A1A">GUARDIAN LIGHT</text>
+  <text x="190" y="508" font-size="13" text-anchor="middle" fill="#333">ESP32 + LED + buzzer + veto button</text>
+  <rect x="70" y="556" width="240" height="68" rx="8" fill="#FFFFFF" stroke="#B4472E" stroke-width="1.5"/>
+  <text x="190" y="584" font-size="16" font-weight="700" text-anchor="middle" fill="#1A1A1A">Guardian page</text>
+  <text x="190" y="606" font-size="13" text-anchor="middle" fill="#333">phone browser: veto, approve, freeze</text>
+
+  <!-- Relayer -->
+  <rect x="470" y="220" width="220" height="130" rx="10" fill="#F3F3F3" stroke="#666" stroke-width="1.5"/>
+  <text x="580" y="256" font-size="17" font-weight="700" text-anchor="middle" fill="#1A1A1A">RELAYER</text>
+  <text x="580" y="280" font-size="13" text-anchor="middle" fill="#333">our backend</text>
+  <text x="580" y="300" font-size="13" text-anchor="middle" fill="#333">carries messages, pays gas</text>
+  <text x="580" y="326" font-size="13" font-weight="700" text-anchor="middle" fill="#8A3520">a postman: cannot forge</text>
+
+  <!-- Hedera -->
+  <rect x="820" y="70" width="420" height="600" rx="12" fill="#EFFAF3" stroke="#2F7D57" stroke-width="1.5"/>
+  <text x="836" y="94" font-size="14" font-weight="700" fill="#1F5C3F">HEDERA TESTNET</text>
+  <rect x="860" y="116" width="340" height="96" rx="8" fill="#FFFFFF" stroke="#2F7D57" stroke-width="2"/>
+  <text x="1030" y="146" font-size="17" font-weight="700" text-anchor="middle" fill="#1A1A1A">VAULT contract</text>
+  <text x="1030" y="168" font-size="13" text-anchor="middle" fill="#333">holds HBAR + USDC, checks every signature</text>
+  <text x="1030" y="190" font-size="13" text-anchor="middle" fill="#333">no owner, no admin, cannot be upgraded</text>
+  <rect x="860" y="306" width="340" height="74" rx="8" fill="#FFFFFF" stroke="#2F7D57" stroke-width="1.5"/>
+  <text x="1030" y="336" font-size="16" font-weight="700" text-anchor="middle" fill="#1A1A1A">Schedule Service (0x16b)</text>
+  <text x="1030" y="358" font-size="13" text-anchor="middle" fill="#333">the network's own timer</text>
+  <rect x="860" y="440" width="340" height="68" rx="8" fill="#FFFFFF" stroke="#2F7D57" stroke-width="1.5"/>
+  <text x="1030" y="468" font-size="16" font-weight="700" text-anchor="middle" fill="#1A1A1A">HCS topic</text>
+  <text x="1030" y="490" font-size="13" text-anchor="middle" fill="#333">public log with network timestamps</text>
+  <rect x="860" y="566" width="340" height="80" rx="8" fill="#FFFFFF" stroke="#2F7D57" stroke-width="1.5"/>
+  <text x="1030" y="594" font-size="16" font-weight="700" text-anchor="middle" fill="#1A1A1A">Mirror node</text>
+  <text x="1030" y="614" font-size="13" text-anchor="middle" fill="#333">read-only history, also read by</text>
+  <text x="1030" y="632" font-size="13" text-anchor="middle" fill="#333">the relayer and the dashboard</text>
+
+  <!-- arrows: owner -> relayer -->
+  <path d="M310,142 L468,250" stroke="#333" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <text x="352" y="170" font-size="12.5" fill="#1A1A1A">signed payment</text>
+  <path d="M312,228 L468,282" stroke="#333" stroke-width="1.8" fill="none" marker-end="url(#a)" marker-start="url(#as)"/>
+  <text x="345" y="297" font-size="12.5" fill="#1A1A1A">requests, live state</text>
+  <path d="M310,314 L468,314" stroke="#333" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <text x="330" y="336" font-size="12.5" fill="#1A1A1A">signed small payment</text>
+  <!-- light -> relayer -->
+  <path d="M310,484 C420,470 520,430 560,352" stroke="#B4472E" stroke-width="1.8" fill="none" marker-end="url(#ar)"/>
+  <text x="372" y="446" font-size="12.5" fill="#8A3520">signed veto</text>
+
+  <!-- relayer -> vault / HCS -->
+  <path d="M690,250 L858,172" stroke="#333" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <text x="700" y="196" font-size="12.5" fill="#1A1A1A">transactions</text>
+  <path d="M690,320 L858,462" stroke="#333" stroke-width="1.8" fill="none" marker-end="url(#a)"/>
+  <text x="696" y="428" font-size="12.5" fill="#1A1A1A">log messages</text>
+
+  <!-- vault <-> timer -->
+  <path d="M950,212 L950,304" stroke="#2F7D57" stroke-width="2.2" fill="none" marker-end="url(#ag)"/>
+  <text x="868" y="254" font-size="12.5" fill="#1F5C3F">1. start timer</text>
+  <path d="M1110,306 L1110,214" stroke="#2F7D57" stroke-width="2.2" fill="none" marker-end="url(#ag)"/>
+  <text x="1120" y="254" font-size="12.5" fill="#1F5C3F">2. time is up:</text>
+  <text x="1120" y="270" font-size="12.5" fill="#1F5C3F">execute(id)</text>
+
+  <!-- page -> vault direct -->
+  <path d="M310,574 L802,574 L802,150 L858,150" stroke="#B4472E" stroke-width="1.8" fill="none" stroke-dasharray="8 5" marker-end="url(#ar)"/>
+  <text x="440" y="566" font-size="12.5" fill="#8A3520">veto sent directly (no relayer needed)</text>
+
+  <!-- mirror -> page -->
+  <path d="M858,610 L312,610" stroke="#555" stroke-width="1.5" fill="none" stroke-dasharray="2 5" marker-end="url(#a)"/>
+  <text x="470" y="630" font-size="12.5" fill="#333">reads the chain directly</text>
+
+  <!-- legend -->
+  <line x1="40" y1="716" x2="90" y2="716" stroke="#333" stroke-width="1.8"/>
+  <text x="100" y="720" font-size="13" fill="#1A1A1A">signed message or transaction</text>
+  <line x1="330" y1="716" x2="380" y2="716" stroke="#B4472E" stroke-width="1.8" stroke-dasharray="8 5"/>
+  <text x="390" y="720" font-size="13" fill="#1A1A1A">direct path that skips the relayer</text>
+  <line x1="640" y1="716" x2="690" y2="716" stroke="#555" stroke-width="1.5" stroke-dasharray="2 5"/>
+  <text x="700" y="720" font-size="13" fill="#1A1A1A">read only</text>
+  <line x1="820" y1="716" x2="870" y2="716" stroke="#2F7D57" stroke-width="2.2"/>
+  <text x="880" y="720" font-size="13" fill="#1A1A1A">done by the Hedera network itself</text>
+  <text x="40" y="762" font-size="13" fill="#444">Design of 5 Oct 2026. Testnet only. Not yet tested on chain: see the UNVERIFIED list in README.md.</text>
+</svg>

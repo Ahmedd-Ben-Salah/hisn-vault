@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "author": "HISN",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "board-ssd1306", "id": "oled", "top": -130, "left": 160, "attrs": { "i2cAddress": "0x3c" } },
+    { "type": "wokwi-pushbutton", "id": "btnUp", "top": 60, "left": 200, "attrs": { "color": "grey", "label": "NO" } },
+    { "type": "wokwi-pushbutton", "id": "btnNext", "top": 60, "left": 280, "attrs": { "color": "grey", "label": "MORE" } },
+    { "type": "wokwi-pushbutton", "id": "btnOk", "top": 60, "left": 360, "attrs": { "color": "green", "label": "YES" } },
+    { "type": "wokwi-buzzer", "id": "buzz", "top": 150, "left": 220, "attrs": { "volume": "0.1" } }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "oled:VCC", "esp:3V3", "red", [] ],
+    [ "oled:GND", "esp:GND.1", "black", [] ],
+    [ "oled:SDA", "esp:21", "blue", [] ],
+    [ "oled:SCL", "esp:22", "orange", [] ],
+    [ "btnUp:1.l", "esp:32", "purple", [] ],
+    [ "btnUp:2.l", "esp:GND.1", "black", [] ],
+    [ "btnNext:1.l", "esp:33", "teal", [] ],
+    [ "btnNext:2.l", "esp:GND.1", "black", [] ],
+    [ "btnOk:1.l", "esp:25", "green", [] ],
+    [ "btnOk:2.l", "esp:GND.1", "black", [] ],
+    [ "buzz:2", "esp:26", "magenta", [] ],
+    [ "buzz:1", "esp:GND.1", "black", [] ]
+  ],
+  "dependencies": {}
+}

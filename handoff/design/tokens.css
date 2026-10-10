@@ -1,0 +1,40 @@
+/* Hisn design tokens: navy and royal blue. Import once, globally. */
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800;900&display=swap");
+
+:root {
+  /* core */
+  --ink: #0B1F3A;          /* text, dark fills */
+  --ink-2: #33455E;        /* text on soft panels */
+  --muted: #4B5B73;        /* secondary text */
+  --line: #E3E8EF;         /* hairlines, card borders */
+  --border: #C7D0DD;       /* input and chip borders */
+  --soft: #EEF2F8;         /* pills, quiet buttons, soft panels */
+  --bg: #FFFFFF;
+  --accent: #1D4ED8;       /* primary action, links on hover */
+  --on-accent: #FFFFFF;
+
+  /* status: always paired with a word */
+  --wait-bg: #FBF0D9;  --wait-track: #EBDDB4;  --wait-fg: #6B4E00;  --wait-text: #3D3210;
+  --stop: #B42318;     --stop-fg: #B02A15;     --stop-bg: #FBE9E5;  --stop-bg-2: #FBE4DF;  --stop-text: #7A1D0E;
+  --ok-fg: #0F6B48;    --ok-bg: #DDF1E7;       --ok-text: #0F4A33;  --online: #12A150;
+  --usdc: #2775CA;
+
+  /* type */
+  --font: "Figtree", system-ui, sans-serif;
+  --fs-display: 68px;  /* balance on desktop home */
+  --fs-h1: 44px;       /* page titles; letter-spacing -1.5px; weight 900 */
+  --fs-h2: 22px;       /* section titles; weight 800 */
+  --fs-lead: 18px;
+  --fs-body: 16px;
+  --fs-small: 14px;
+  --fs-tiny: 13px;
+
+  /* shape and space */
+  --r-pill: 999px;
+  --r-card: 28px;
+  --r-panel: 24px;
+  --r-input: 16px;
+  --gap: 16px;
+  --page-x: 150px;     /* desktop side padding at 1440; use max-width 1140 + auto margins */
+  --bar-h: 72px;
+}
