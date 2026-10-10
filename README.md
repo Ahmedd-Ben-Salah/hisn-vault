@@ -26,6 +26,14 @@ Most payment scams do not break anything. The victim is talked into sending the 
 
 The rules live in the contract and the release is run by the Hedera network itself. Our server only carries messages: it cannot move the money, speed a payment up, or hold one back.
 
+## Pitch deck
+
+<p align="center">
+  <a href="https://ahmedd-ben-salah.github.io/hisn-vault/pitch/"><img src="docs/assets/pitch-cover.jpg" alt="Hisn pitch deck, title slide" width="100%"></a>
+</p>
+
+The [deck](https://ahmedd-ben-salah.github.io/hisn-vault/pitch/) runs in the browser: arrow keys or the buttons at the bottom right move between slides.
+
 ## How a payment is decided
 
 | Tier | When | What happens |
