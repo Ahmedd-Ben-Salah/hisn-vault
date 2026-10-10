@@ -26,6 +26,7 @@ function csp(mirror: string): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "VITE_");
   return {
+    base: process.env.HISN_BASE ?? "/",
     plugins: [react(), tailwindcss(), csp(env.VITE_MIRROR_URL ?? "")],
     server: { port: 5175, host: true },
     build: { assetsInlineLimit: 0 },

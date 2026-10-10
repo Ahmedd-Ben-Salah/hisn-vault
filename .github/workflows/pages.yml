@@ -36,6 +36,10 @@ jobs:
           VITE_VAULT_ADDRESS: "0xc066F10988733ea7875817cDC8d4bF098615A061"
           VITE_OWNER_NAME: Amel
           VITE_CONNECT_ORIGINS: "https://*.trycloudflare.com wss://*.trycloudflare.com"
+      - name: Verify page
+        run: npm -w verify run build
+        env:
+          HISN_BASE: /${{ github.event.repository.name }}/verify/
       - name: Assemble
         run: |
           mkdir -p site
@@ -43,6 +47,8 @@ jobs:
           cp site/index.html site/404.html
           mkdir -p site/guardian
           cp -r guardian/dist/. site/guardian/
+          mkdir -p site/verify
+          cp -r verify/dist/. site/verify/
           touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
