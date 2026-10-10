@@ -19,7 +19,8 @@ export default function Send() {
   const usdc = useUsdc();
   const { nameOf } = useNames();
   const { state, payments, requests, now } = useSnapshot();
-  const [who, setWho] = useState<Who>(() => (state.payees[0] ? { kind: "saved", address: state.payees[0].address } : { kind: "new" }));
+  const [picked, setWho] = useState<Who | null>(null);
+  const who: Who = picked ?? (state.payees[0] ? { kind: "saved", address: state.payees[0].address } : { kind: "new" });
   const [newAddress, setNewAddress] = useState("");
   const [symbol, setSymbol] = useState<"USDC" | "HBAR">("USDC");
   const [value, setValue] = useState("");
@@ -99,8 +100,8 @@ export default function Send() {
       const r = await source.requestPayment(to, tokenAddr, raw.toString());
       setReqId(r.reqId);
       setSentAt(now);
-    } catch {
-      setError("Something went wrong. Nothing was sent.");
+    } catch (e) {
+      setError(`${(e as Error).message || "Something went wrong"}. Nothing was sent.`);
     } finally {
       setBusy(false);
     }
@@ -215,7 +216,7 @@ export default function Send() {
         onChangeText={(t) => {
           setNewAddress(t);
           if (t.trim()) setWho({ kind: "new" });
-          else if (state.payees[0]) setWho({ kind: "saved", address: state.payees[0].address });
+          else setWho(null);
         }}
         placeholder="0x…"
         placeholderTextColor={C.muted}

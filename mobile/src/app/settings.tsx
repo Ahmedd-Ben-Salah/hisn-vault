@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
 import { useSession } from "../state/session";
 import { Address, Button, Card, Screen, T, Tinted, Title } from "../ui/kit";
 import { C, F } from "../ui/theme";
@@ -15,6 +15,7 @@ export default function Settings() {
   const [sim, setSim] = useState(settings.simUrl);
   const [keyText, setKeyText] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
+  const [removeArmed, setRemoveArmed] = useState(false);
 
   return (
     <Screen
@@ -98,14 +99,13 @@ export default function Settings() {
               <Address value={guardianKey.address} />
               <Button
                 look="stopOutline"
-                onPress={() =>
-                  Alert.alert("Remove this key?", "Without it this phone cannot stop payments in live mode.", [
-                    { text: "Keep it", style: "cancel" },
-                    { text: "Remove", style: "destructive", onPress: () => void guardianKey.remove() },
-                  ])
-                }
+                onPress={() => {
+                  if (!removeArmed) return setRemoveArmed(true);
+                  setRemoveArmed(false);
+                  void guardianKey.remove().then(() => setMsg("Key removed."));
+                }}
               >
-                Remove key
+                {removeArmed ? "Yes, remove it" : "Remove key"}
               </Button>
             </View>
           ) : (

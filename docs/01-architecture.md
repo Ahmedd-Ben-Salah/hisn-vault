@@ -2,7 +2,7 @@
 
 ## The big picture
 
-See `diagrams/architecture.svg` for the image version.
+See `diagrams/trust-layers.jpg` and `diagrams/architecture.svg` for the image versions.
 
 ```mermaid
 flowchart LR
