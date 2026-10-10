@@ -3,6 +3,7 @@
 </p>
 
 <p align="center">
+  <a href="https://ahmedd-ben-salah.github.io/hisn-vault/pitch/">Pitch deck</a> &nbsp;·&nbsp;
   <a href="https://ahmedd-ben-salah.github.io/hisn-vault/">Dashboard</a> &nbsp;·&nbsp;
   <a href="https://ahmedd-ben-salah.github.io/hisn-vault/guardian/">Guardian page</a> &nbsp;·&nbsp;
   <a href="https://ahmedd-ben-salah.github.io/hisn-vault/verify/">Verify a payment</a> &nbsp;·&nbsp;

@@ -49,6 +49,8 @@ jobs:
           cp -r guardian/dist/. site/guardian/
           mkdir -p site/verify
           cp -r verify/dist/. site/verify/
+          mkdir -p site/pitch
+          cp pitch/index.html site/pitch/
           touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
